@@ -9,7 +9,7 @@ export default function ProfileCard({ user }: { user: User }) {
   const router = useRouter();
 
   const goToUser = () => {
-    router.push("/social-user");
+    router.push(`/social/${encodeURIComponent(user.id)}`);
   };
 
   return (
@@ -31,7 +31,6 @@ export default function ProfileCard({ user }: { user: User }) {
           </div>
         </div>
 
-        {/* Arrow button → navigate */}
         <button
           type="button"
           className="rounded-full p-2 text-zinc-400 hover:bg-zinc-100"
@@ -45,13 +44,12 @@ export default function ProfileCard({ user }: { user: User }) {
         </button>
       </div>
 
-      {/* Create button → NO navigate */}
       <button
         type="button"
         className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl bg-violet-700 px-4 py-2.5 text-sm font-semibold text-white hover:bg-violet-800"
         onClick={(e) => {
           e.stopPropagation();
-          // create logic here
+          // create logic
         }}
       >
         <span className="grid h-5 w-5 place-items-center rounded-md bg-white/15">

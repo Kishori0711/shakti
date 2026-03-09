@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Montserrat, Open_Sans, Lato } from "next/font/google";
 import "./globals.css";
+import ReduxProvider from "@/store/provider";
 
 const montserrat = Montserrat({
   subsets: ["latin"],
@@ -34,7 +35,7 @@ export default function RootLayout({
       className={`${montserrat.variable} ${openSans.variable} ${lato.variable}`}
     >
       <body className="antialiased">
-        {children}
+        <ReduxProvider>{children}</ReduxProvider>
       </body>
     </html>
   );
