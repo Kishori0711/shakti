@@ -9,7 +9,7 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
   const [sidebarOpen, setSidebarOpen] = useState(false); 
 
   return (
-    <div className="h-screen bg-gray-50 overflow-hidden">
+    <div className="h-screen bg-[#f5f4f2]  overflow-hidden">
       {/* outer padding same as your UI */}
       <div className="h-full flex gap-4 p-4 overflow-hidden">
         <Sidebar
@@ -27,7 +27,7 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
             />
           </div>
 
-          <main className="flex-1 overflow-y-auto pt-4">
+          <main className="flex-1 rounded-2xl overflow-y-auto pt-4">
             {children}
           </main>
         </div>

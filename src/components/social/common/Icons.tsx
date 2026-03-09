@@ -1,0 +1,56 @@
+// import type { SVGProps } from "react";
+
+type IconProps = { className?: string };
+
+export const IconHeart = ({ className }: IconProps) => (
+  <svg viewBox="0 0 24 24" className={className} fill="none" stroke="currentColor" strokeWidth="2">
+    <path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8z" />
+  </svg>
+);
+
+export const IconComment = ({ className }: IconProps) => (
+  <svg viewBox="0 0 24 24" className={className} fill="none" stroke="currentColor" strokeWidth="2">
+    <path d="M21 15a4 4 0 0 1-4 4H8l-5 3V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4z" />
+  </svg>
+);
+
+export const IconShare = ({ className }: IconProps) => (
+  <svg viewBox="0 0 24 24" className={className} fill="none" stroke="currentColor" strokeWidth="2">
+    <path d="M4 12v7a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-7" />
+    <path d="M16 6l-4-4-4 4" />
+    <path d="M12 2v14" />
+  </svg>
+);
+
+export const IconBookmark = ({ className }: IconProps) => (
+  <svg viewBox="0 0 24 24" className={className} fill="none" stroke="currentColor" strokeWidth="2">
+    <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
+  </svg>
+);
+
+export const IconPlus = ({ className }: IconProps) => (
+  <svg viewBox="0 0 24 24" className={className} fill="none" stroke="currentColor" strokeWidth="2">
+    <path d="M12 5v14M5 12h14" />
+  </svg>
+);
+
+export const IconSearch = ({ className }: IconProps) => (
+  <svg viewBox="0 0 24 24" className={className} fill="none" stroke="currentColor" strokeWidth="2">
+    <circle cx="11" cy="11" r="7" />
+    <path d="M20 20l-3.5-3.5" />
+  </svg>
+);
+
+export const IconChevronRight = ({ className }: IconProps) => (
+  <svg viewBox="0 0 24 24" className={className} fill="none" stroke="currentColor" strokeWidth="2">
+    <path d="M9 18l6-6-6-6" />
+  </svg>
+);
+
+export const IconDots = ({ className }: IconProps) => (
+  <svg viewBox="0 0 24 24" className={className} fill="currentColor">
+    <circle cx="6" cy="12" r="1.6" />
+    <circle cx="12" cy="12" r="1.6" />
+    <circle cx="18" cy="12" r="1.6" />
+  </svg>
+);
