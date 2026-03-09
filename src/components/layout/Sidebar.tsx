@@ -183,7 +183,7 @@ function SideLink({
         "gap-2 px-3 py-3",
         collapsed ? "lg:justify-center lg:px-0 lg:gap-0" : "",
         isActive
-          ? "bg-[#5b2a86] text-white"
+          ? "bg-primary-500 text-white"
           : "text-gray-900 hover:bg-gray-100",
       ].join(" ")}
     >
@@ -647,3 +647,210 @@ return () => window.clearTimeout(id);
     </>
   );
 }
+
+
+// "use client";
+
+// import { usePathname, useRouter } from "next/navigation";
+// import Link from "next/link";
+// import Image from "next/image";
+// import { FiHelpCircle, FiSettings, FiLogOut } from "react-icons/fi";
+// import { IoIosNotifications } from "react-icons/io";
+// import { RiPlayReverseLargeFill } from "react-icons/ri";
+// import { IoPlay } from "react-icons/io5";
+// import type { IconType } from "react-icons";
+
+// import logoFull from "../../assets/logo/Shakti 2047 Final Logo CC.png";
+// import logoMark from "../../assets/logo/smallLogo.png";
+
+// import homeInactive from "../../assets/sidebar/home_deactive.svg";
+// import homeActive from "../../assets/sidebar/home_active.svg";
+
+// import learnInactive from "../../assets/sidebar/book_deactive.svg";
+// import learnActive from "../../assets/sidebar/book_active.svg";
+
+// import mentorsInactive from "../../assets/sidebar/userGroup_deactive.svg";
+// import mentorsActive from "../../assets/sidebar/userGroup_active.svg";
+
+// import eventsInactive from "../../assets/sidebar/calendar_deactive.svg";
+// import eventsActive from "../../assets/sidebar/calendar_active.svg";
+
+// import artsInactive from "../../assets/sidebar/art_deactive.svg";
+// import artsActive from "../../assets/sidebar/art_active.svg";
+
+// import socialInactive from "../../assets/sidebar/social_deactive.svg";
+// import socialActive from "../../assets/sidebar/social_active.svg";
+
+// type Props = {
+//   open: boolean;
+//   onClose: () => void;
+//   collapsed: boolean;
+//   onToggleCollapsed: () => void;
+// };
+
+// type SvgIconPair = {
+//   active: string;
+//   inactive: string;
+// };
+
+// type Item = {
+//   to: string;
+//   label: string;
+//   icon: SvgIconPair | IconType;
+// };
+
+// const mainItems: Item[] = [
+//   { to: "/", label: "Home", icon: { active: homeActive, inactive: homeInactive } },
+//   { to: "/learn", label: "Learn", icon: { active: learnActive, inactive: learnInactive } },
+//   { to: "/mentors", label: "Mentors", icon: { active: mentorsActive, inactive: mentorsInactive } },
+//   { to: "/events", label: "Events", icon: { active: eventsActive, inactive: eventsInactive } },
+//   { to: "/artsCulture", label: "Arts & Culture", icon: { active: artsActive, inactive: artsInactive } },
+//   { to: "/social", label: "Social Feed", icon: { active: socialActive, inactive: socialInactive } },
+// ];
+
+// const bottomItems: Item[] = [
+//   { to: "/help", label: "Help", icon: FiHelpCircle },
+//   { to: "/notifications", label: "Notifications", icon: IoIosNotifications },
+//   { to: "/settings", label: "Settings", icon: FiSettings },
+// ];
+
+// function isSvg(icon: SvgIconPair | IconType): icon is SvgIconPair {
+//   return typeof icon === "object";
+// }
+
+// function SidebarIcon({
+//   icon,
+//   active,
+// }: {
+//   icon: SvgIconPair | IconType;
+//   active: boolean;
+// }) {
+//   if (isSvg(icon)) {
+//     return (
+//       <Image
+//         src={active ? icon.active : icon.inactive}
+//         width={24}
+//         height={24}
+//         alt="icon"
+//       />
+//     );
+//   }
+
+//   const Icon = icon;
+//   return <Icon className="text-xl" />;
+// }
+
+// export default function Sidebar({
+//   open,
+//   collapsed,
+//   onToggleCollapsed,
+// }: Props) {
+//   const pathname = usePathname();
+//   const router = useRouter();
+
+//   const handleLogout = () => {
+//     router.replace("/login");
+//   };
+
+//   return (
+//     <aside
+//       className={`
+//       relative h-full
+//       transition-all duration-300
+//       ${collapsed ? "w-20" : "w-64"}
+//       rounded-2xl bg-white border border-gray-200
+//       p-4 flex flex-col
+//       `}
+//     >
+//       {/* collapse button */}
+//       <button
+//         onClick={onToggleCollapsed}
+//         className="hidden lg:flex absolute right-2 top-6
+//         h-7 w-7 items-center justify-center
+//         rounded-lg bg-primary-500 text-white"
+//       >
+//         {collapsed ? <IoPlay /> : <RiPlayReverseLargeFill />}
+//       </button>
+
+//       {/* logo */}
+//       <Link href="/" className="flex items-center justify-center mb-6">
+//         <Image
+//           src={logoFull}
+//           alt="logo"
+//           width={100}
+//           className={collapsed ? "hidden" : ""}
+//         />
+
+//         <Image
+//           src={logoMark}
+//           alt="logo"
+//           width={40}
+//           className={collapsed ? "" : "hidden"}
+//         />
+//       </Link>
+
+//       {/* nav */}
+//       <nav className="flex-1 space-y-1 overflow-y-auto">
+//         {mainItems.map((item) => {
+//           const active =
+//             pathname === item.to || pathname.startsWith(item.to + "/");
+
+//           return (
+//             <Link
+//               key={item.to}
+//               href={item.to}
+//               className={`
+//               flex items-center gap-3 px-3 py-3 rounded-xl text-sm transition
+//               ${collapsed ? "justify-center" : ""}
+//               ${
+//                 active
+//                   ? "bg-primary-500 text-white"
+//                   : "text-gray-700 hover:bg-primary-50 hover:text-primary-600"
+//               }
+//               `}
+//             >
+//               <SidebarIcon icon={item.icon} active={active} />
+
+//               {!collapsed && <span>{item.label}</span>}
+//             </Link>
+//           );
+//         })}
+//       </nav>
+
+//       {/* bottom section */}
+//       <div className="border-t pt-4 space-y-1">
+//         {bottomItems.map((item) => {
+//           const Icon = item.icon as IconType;
+
+//           return (
+//             <Link
+//               key={item.to}
+//               href={item.to}
+//               className={`
+//               flex items-center gap-3 px-3 py-3 rounded-xl text-sm
+//               ${collapsed ? "justify-center" : ""}
+//               text-gray-700 hover:bg-primary-50 hover:text-primary-600
+//               `}
+//             >
+//               <Icon className="text-xl" />
+//               {!collapsed && <span>{item.label}</span>}
+//             </Link>
+//           );
+//         })}
+
+//         {/* logout */}
+//         <button
+//           onClick={handleLogout}
+//           className={`
+//           flex w-full items-center gap-3 px-3 py-3 rounded-xl text-sm
+//           text-gray-600 hover:bg-primary-50 hover:text-primary-600
+//           ${collapsed ? "justify-center" : ""}
+//           `}
+//         >
+//           <FiLogOut className="text-xl" />
+//           {!collapsed && <span>Logout</span>}
+//         </button>
+//       </div>
+//     </aside>
+//   );
+// }

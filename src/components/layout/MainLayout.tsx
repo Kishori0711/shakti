@@ -1,37 +1,92 @@
+// "use client";
+
+// import { useState } from "react";
+// import Sidebar from "./Sidebar";
+// import Header from "./Navbar"; 
+
+// export default function MainLayout({ children }: { children: React.ReactNode }) {
+//   const [collapsed, setCollapsed] = useState(false);
+//   const [sidebarOpen, setSidebarOpen] = useState(false); 
+
+//   return (
+//     <div className="h-screen bg-[#F5F1F0] overflow-hidden">
+//       {/* outer padding same as your UI */}
+//       <div className="h-full flex gap-4 p-4 overflow-hidden">
+//         <Sidebar
+//           open={sidebarOpen}
+//           onClose={() => setSidebarOpen(false)}
+//           collapsed={collapsed}
+//           onToggleCollapsed={() => setCollapsed((v) => !v)}
+//         />
+
+//         <div className="flex-1 flex flex-col overflow-hidden">
+//           <div className="shrink-0">
+//             <Header
+//               title="Dashboard"
+//               onMenuClick={() => setSidebarOpen(true)} 
+//             />
+//           </div>
+
+//           <main className="flex-1 overflow-y-auto pt-4">
+//             {children}
+//           </main>
+//         </div>
+//       </div>
+//     </div>
+//   );
+// }
+
 "use client";
 
 import { useState } from "react";
 import Sidebar from "./Sidebar";
-import Header from "./Navbar"; 
+import Navbar from "./Navbar";
 
-export default function MainLayout({ children }: { children: React.ReactNode }) {
+export default function MainLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+
   const [collapsed, setCollapsed] = useState(false);
-  const [sidebarOpen, setSidebarOpen] = useState(false); 
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
-    <div className="h-screen bg-gray-50 overflow-hidden">
-      {/* outer padding same as your UI */}
+    <div className="h-screen bg-gray-100 overflow-hidden">
+
       <div className="h-full flex gap-4 p-4 overflow-hidden">
+
+        {/* Sidebar */}
         <Sidebar
           open={sidebarOpen}
           onClose={() => setSidebarOpen(false)}
           collapsed={collapsed}
-          onToggleCollapsed={() => setCollapsed((v) => !v)}
+          onToggleCollapsed={() => setCollapsed((prev) => !prev)}
         />
 
+        {/* Right section */}
         <div className="flex-1 flex flex-col overflow-hidden">
+
+          {/* Header */}
           <div className="shrink-0">
-            <Header
+            <Navbar
               title="Dashboard"
-              onMenuClick={() => setSidebarOpen(true)} 
+              onMenuClick={() => setSidebarOpen(true)}
             />
           </div>
 
+          {/* Page Content */}
           <main className="flex-1 overflow-y-auto pt-4">
-            {children}
+
+            <div className="rounded-2xl bg-white border border-gray-200 p-6">
+              {children}
+            </div>
+
           </main>
+
         </div>
       </div>
+
     </div>
   );
 }
