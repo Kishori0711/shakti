@@ -14,7 +14,7 @@ export default function WelcomeBanner({ userName = "Priya" }: Props) {
 
         {/* LEFT */}
         <div className="min-w-0 flex-1">
-          <h1 className="text-[clamp(20px,2.1vw,28px)] font-black leading-tight text-zinc-900">
+          <h1 className="text-[clamp(20px,2.1vw,28px)] font-black leading-tight">
             Welcome back, {userName}
           </h1>
 
@@ -23,11 +23,11 @@ export default function WelcomeBanner({ userName = "Priya" }: Props) {
           </p>
 
           <div className="mt-4 flex flex-wrap gap-3">
-            <button className="rounded-xl bg-primary px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-primary/90">
+            <button className="rounded-xl bg-primary-500 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-primary/90 ">
               Start My Onboarding
             </button>
 
-            <button className="rounded-xl border border-primary/40 bg-white px-5 py-2.5 text-sm font-semibold text-primary transition-colors hover:bg-gray-50">
+            <button className="rounded-xl border border-primary-500 bg-white px-5 py-2.5 text-sm font-semibold text-primary-500 transition-colors hover:bg-gray-50">
               Explore How It Works
             </button>
           </div>
@@ -37,7 +37,7 @@ export default function WelcomeBanner({ userName = "Priya" }: Props) {
         <div className="relative hidden h-full flex-[0_0_38%] lg:block">
 
           {/* orange circle */}
-          <div className="absolute right-1 top-48 h-[clamp(220px,22vw,320px)] w-[clamp(200px,20vw,320px)] -translate-y-1/2 rounded-full bg-[#F6A623]" />
+          <div className="absolute right-1 top-48 h-[clamp(220px,22vw,320px)] w-[clamp(200px,20vw,320px)] -translate-y-1/2 rounded-full bg-primary-500" />
 
           {/* image */}
           <Image

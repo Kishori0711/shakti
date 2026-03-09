@@ -54,16 +54,15 @@ function IconBell({ className = "h-5 w-5" }: { className?: string }) {
 
 export default function NotificationDetailPage() {
   const router = useRouter();
-  const params = useParams<{ id: string }>();
+  const params = useParams<{ notificationId: string }>();
 
   const [deleted, setDeleted] = useState(false);
 
-  const n = useMemo<Notification | undefined>(() => {
-    const id = params?.id;
-    return NOTIFICATIONS.find((x) => x.id === id);
-  }, [params?.id]);
+  const notification = NOTIFICATIONS.find(
+    (n) => n.id === params.notificationId
+  );
 
-  if (!n || deleted) {
+  if (!notification || deleted) {
     return (
       <div className="min-h-screen px-4 py-8">
         <div className="mx-auto w-full max-w-5xl rounded-2xl bg-white p-6">
@@ -94,7 +93,7 @@ export default function NotificationDetailPage() {
 
       <div className="w-full rounded-2xl bg-white p-6">
         <div className="flex items-start justify-between gap-4">
-          <p className="text-sm text-gray-500">{n.createdAtLabel}</p>
+          <p className="text-sm text-gray-500">{notification.createdAtLabel}</p>
 
           <button
             type="button"
@@ -111,17 +110,17 @@ export default function NotificationDetailPage() {
           <div className="grid h-11 w-11 place-items-center rounded-full bg-purple-50 text-[#5b2c83]">
             <IconBell />
           </div>
-          <h1 className="text-base font-semibold text-gray-900">{n.title}</h1>
+          <h1 className="text-base font-semibold text-gray-900">{notification.title}</h1>
         </div>
 
-        <p className="mt-6 text-sm text-gray-700">{n.detailText}</p>
+        <p className="mt-6 text-sm text-gray-700">{notification.detailText}</p>
 
-        {n.info && n.info.length > 0 && (
+        {notification.info && notification.info.length > 0 && (
           <div className="mt-6">
             <h3 className="text-sm font-semibold text-gray-900">Session Information</h3>
 
             <div className="mt-3 space-y-2 text-sm text-gray-700">
-              {n.info.map((row) => (
+              {notification.info.map((row) => (
                 <div key={row.label} className="flex gap-2">
                   <span className="font-semibold">{row.label}:</span>
                   <span className="text-gray-600">{row.value}</span>
@@ -131,9 +130,9 @@ export default function NotificationDetailPage() {
           </div>
         )}
 
-        {n.actions && n.actions.length > 0 && (
+        {notification.actions && notification.actions.length > 0 && (
           <div className="mt-8 flex flex-wrap gap-3">
-            {n.actions.map((a) => (
+            {notification.actions.map((a) => (
               <button
                 key={a.label}
                 type="button"

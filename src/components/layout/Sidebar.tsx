@@ -312,7 +312,7 @@ return () => window.clearTimeout(id);
         <button
           type="button"
           onClick={onToggleCollapsed}
-          className="hidden lg:flex absolute -right-3 top-6 h-7 w-7 items-center justify-center rounded-lg bg-[#5b2a86] text-white shadow-sm hover:opacity-90 transition"
+          className="hidden lg:flex absolute -right-3 top-6 h-7 w-7 items-center justify-center rounded-lg bg-primary-500 text-white shadow-sm hover:opacity-90 transition"
           aria-label={effectiveCollapsed ? "Expand sidebar" : "Collapse sidebar"}
           title={effectiveCollapsed ? "Expand" : "Collapse"}
         >
@@ -430,7 +430,7 @@ return () => window.clearTimeout(id);
                         ? "lg:justify-center lg:px-0 lg:gap-0"
                         : "",
                       groupActive
-                        ? "bg-[#5b2a86] text-white"
+                        ? "bg-primary-500 text-white"
                         : "text-gray-900 hover:bg-gray-100",
                     ].join(" ")}
                   >
@@ -477,8 +477,8 @@ return () => window.clearTimeout(id);
                               "block rounded-md text-sm py-2 pr-3",
                               "border-l-2 pl-3",
                               childActive
-                                ? "text-[#5b2a86] font-semibold border-[#5b2a86]"
-                                : "text-gray-900 border-transparent hover:text-[#5b2a86]",
+                                ? "text-primary-300 font-semibold border-primary-300"
+                                : "text-gray-900 border-transparent hover:text-primary-400",
                             ].join(" ")}
                           >
                             {child.label}
