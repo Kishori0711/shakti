@@ -89,7 +89,7 @@ const progresses = [
 
 export default function Page() {
   return (
-    <div className="p-2 grid grid-cols-1 md:grid-cols-3 gap-6">
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
       {courses.map((course, index) => (
         <MyCourseCard
           key={course.id}

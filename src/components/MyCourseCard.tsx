@@ -26,7 +26,7 @@ type Props = {
   onClick?: () => void;
 };
 
-const MyCourseCard: React.FC<Props> = ({ course, onClick, progress }) => {
+const MyCourseCard: React.FC<Props> = ({ course, progress, onClick }) => {
   const safePercent = Math.max(0, Math.min(progress.percentage, 100));
 
   return (
@@ -34,11 +34,10 @@ const MyCourseCard: React.FC<Props> = ({ course, onClick, progress }) => {
       onClick={onClick}
       role="button"
       tabIndex={0}
-      className="rounded-2xl border border-border bg-card p-4 shadow-sm hover:shadow-md transition"
+      className="bg-white border border-border rounded-2xl shadow-sm hover:shadow-md transition p-4"
     >
-      {/* Image */}
-      <div className="relative mb-4 h-52 w-full overflow-hidden rounded-lg">
-
+      {/* Image Section */}
+      <div className="relative h-52 w-full overflow-hidden rounded-lg mb-4">
         <Image
           src={course.image}
           alt={course.title}
@@ -47,20 +46,21 @@ const MyCourseCard: React.FC<Props> = ({ course, onClick, progress }) => {
         />
 
         {/* Modules badge */}
-        <span className="absolute left-3 top-3 rounded-md bg-black/40 px-3 py-1.5 text-xs text-white backdrop-blur-md">
+        <span className="absolute top-3 left-3 rounded-md bg-black/40 backdrop-blur-md px-3 py-1.5 text-xs text-white shadow-md">
           {course.modules} Modules
         </span>
 
         {/* Teacher */}
-        <div className="absolute bottom-2 left-2 flex items-center gap-2">
-
-          <Image
-            src={course.teacherAvatar}
-            alt={course.teacherName}
-            width={24}
-            height={24}
-            className="rounded-full border border-white/60 object-cover"
-          />
+        <div className="absolute bottom-2 left-1 flex items-center gap-2 rounded-lg px-3 py-1.5">
+          <div className="w-10 h-10 rounded-full overflow-hidden border border-white/60">
+            <Image
+              src={course.teacherAvatar}
+              alt={course.teacherName}
+              width={40}
+              height={40}
+              className="object-cover"
+            />
+          </div>
 
           <span className="text-sm font-semibold text-white">
             {course.teacherName}
@@ -69,28 +69,31 @@ const MyCourseCard: React.FC<Props> = ({ course, onClick, progress }) => {
       </div>
 
       {/* Tags */}
-      <div className="mb-3 flex flex-wrap gap-2">
+      <div className="flex gap-2 flex-wrap mb-3">
         {course.tags && (
-          <span className="rounded-md bg-purple-100 px-3 py-1 text-sm font-medium text-purple-700">
+          <span className="text-primary-600 text-sm bg-primary-100 px-3 py-1 rounded-md font-medium">
             {course.tags}
           </span>
         )}
 
-        {course.language?.length && (
-          <span className="rounded-md bg-orange-50 px-3 py-1 text-sm font-medium text-purple-700">
+        {course.language?.length > 0 && (
+          <span className="text-primary-600 text-sm bg-secondary-100 px-3 py-1 rounded-md font-medium">
             {course.language.join(", ")}
           </span>
         )}
       </div>
 
-      <h3 className="mb-3 text-base font-medium text-foreground">
+      {/* Title */}
+      <h3 className="font-medium text-foreground text-base mb-3">
         {course.title}
       </h3>
 
-      {/* Progress */}
-      <div className="space-y-2">
+      <hr className="m-2 border-border" />
+
+      {/* Progress Section */}
+      <div className="space-y-2 mt-3">
         <div className="flex items-center justify-between text-sm">
-          <span className="font-semibold">{safePercent}%</span>
+          <span className="font-semibold text-primary-500">{safePercent}%</span>
 
           <span className="text-muted-foreground">
             {progress.completedLessons}/{progress.totalLessons} lessons
@@ -99,7 +102,7 @@ const MyCourseCard: React.FC<Props> = ({ course, onClick, progress }) => {
 
         <div className="h-2 w-full rounded-full bg-gray-200">
           <div
-            className="h-2 rounded-full bg-green-500 transition-all"
+            className="h-2 rounded-full bg-green-600 transition-all"
             style={{ width: `${safePercent}%` }}
           />
         </div>
