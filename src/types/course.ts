@@ -1,4 +1,4 @@
-type Course = {
+export type Course = {
   id: string;
   title: string;
   image: string;
@@ -11,3 +11,5 @@ type Course = {
   tags?: string;
   language?: string[];
 };
+
+

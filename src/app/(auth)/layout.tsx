@@ -38,7 +38,7 @@ export default function AuthLayout({ children }: { children: ReactNode }) {
 
         {/* RIGHT SECTION */}
         <div className="hidden lg:flex w-1/2 p-4">
-          <div className="w-full h-full bg-[#562C85] rounded-2xl text-white flex flex-col px-10 pt-12 pb-0 overflow-hidden">
+          <div className="w-full h-full bg-primary-500 rounded-2xl text-white flex flex-col px-10 pt-12 pb-0 overflow-hidden">
             <div>
               <h1 className="text-3xl font-bold mb-3">Welcome to Shakti 2047</h1>
               <p className="text-purple-100 text-sm mb-3 leading-relaxed">

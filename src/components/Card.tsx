@@ -3,7 +3,7 @@
 
 import React from "react";
 import Image from "next/image";
-import type { Course } from "../types/Course";
+import type { Course } from "../types/course";
 import { Star } from "lucide-react";
 
 type IconLike = React.ReactNode | string;
