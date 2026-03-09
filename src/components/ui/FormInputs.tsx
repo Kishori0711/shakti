@@ -77,7 +77,7 @@ export function Button(props: React.ButtonHTMLAttributes<HTMLButtonElement>) {
     <button
       {...rest}
       className={
-        "w-full rounded-lg bg-[#562C85] py-2.5 text-sm font-semibold text-white hover:opacity-95 disabled:opacity-60 " +
+        "w-full rounded-lg bg-primary-500 py-2.5 text-sm font-semibold text-white hover:opacity-95 disabled:opacity-60 " +
         className
       }
     />

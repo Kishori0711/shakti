@@ -141,7 +141,7 @@ export default function LoginPage() {
               label="Remember me"
             />
             {/* only email */}
-            <Link href="#" className="text-sm font-medium text-[#562C85] hover:underline">
+            <Link href="#" className="text-sm font-medium text-primary-500 hover:underline">
               Forgot Password?
             </Link>
           </div>
@@ -167,7 +167,7 @@ export default function LoginPage() {
 
       <p className="text-center text-sm text-gray-600">
         Don&apos;t have an account?{" "}
-        <Link href={`/signup?method=${method}`} className="text-[#562C85] font-semibold hover:underline">
+        <Link href={`/signup?method=${method}`} className="text-primary-500 font-semibold hover:underline">
           Create Now
         </Link>
       </p>

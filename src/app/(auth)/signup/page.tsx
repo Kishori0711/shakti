@@ -148,11 +148,11 @@ export default function SignupPage() {
             label={
               <>
                 I agree to Shakti&apos;s{" "}
-                <Link href="#" className="text-[#562C85] font-medium">
+                <Link href="#" className="text-primary-500 font-medium">
                   Privacy Policy
                 </Link>{" "}
                 and{" "}
-                <Link href="#" className="text-[#562C85] font-medium">
+                <Link href="#" className="text-primary-500 font-medium">
                   Terms
                 </Link>
               </>
@@ -167,7 +167,7 @@ export default function SignupPage() {
 
       <p className="text-center text-sm text-gray-600">
         Already have an account?{" "}
-        <Link href={`/login?method=${method}`} className="text-[#562C85] font-semibold hover:underline">
+        <Link href={`/login?method=${method}`} className="text-primary-500 font-semibold hover:underline">
           Login Now
         </Link>
       </p>
