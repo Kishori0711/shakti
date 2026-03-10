@@ -1,5 +1,3 @@
-
-
 // src/features/chatbot/chatbotThunk.ts
 
 import { createAsyncThunk } from "@reduxjs/toolkit";
@@ -12,9 +10,6 @@ import type {
   ChatHistory,
 } from "@/types/chatbot";
 
-// ============================================
-// 1️⃣ FETCH PERSONAS
-// ============================================
 
 export const fetchPersonasThunk = createAsyncThunk(
   "chatbot/fetchPersonas",
@@ -31,9 +26,6 @@ export const fetchPersonasThunk = createAsyncThunk(
   }
 );
 
-// ============================================
-// 2️⃣ START NEW CHAT
-// ============================================
 
 export const startNewChatThunk = createAsyncThunk(
   "chatbot/startChat",
@@ -56,10 +48,6 @@ export const startNewChatThunk = createAsyncThunk(
     }
   }
 );
-
-// ============================================
-// 3️⃣ SEND MESSAGE
-// ============================================
 
 export const sendMessageThunk = createAsyncThunk(
   "chatbot/sendMessage",
@@ -86,9 +74,6 @@ export const sendMessageThunk = createAsyncThunk(
   }
 );
 
-// ============================================
-// 4️⃣ GET CHAT HISTORY
-// ============================================
 
 export const getChatHistoryThunk = createAsyncThunk(
   "chatbot/getHistory",
@@ -105,9 +90,6 @@ export const getChatHistoryThunk = createAsyncThunk(
   }
 );
 
-// ============================================
-// 5️⃣ END CHAT SESSION
-// ============================================
 
 export const endChatSessionThunk = createAsyncThunk(
   "chatbot/endSession",

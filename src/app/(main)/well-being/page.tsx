@@ -98,9 +98,9 @@ export default function WellBeingPage() {
 
   // Background colors
   const personaBg: Record<string, string> = {
-    aria: "bg-rose-50",
-    elara: "bg-sky-50",
-    mira: "bg-violet-50",
+    aria: "bg-orange-100",
+    elara: "bg-yellow-100",
+    mira: "bg-red-100",
   };
 
   const onSelect = async (slug: string) => {
