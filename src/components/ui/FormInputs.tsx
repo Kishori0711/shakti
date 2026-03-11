@@ -13,7 +13,7 @@ export function Input(props: React.InputHTMLAttributes<HTMLInputElement> & { lab
       <input
         {...rest}
         className={
-          "w-full rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[#562C85]/15 " +
+          "w-full rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-primary-100 " +
           className
         }
       />
@@ -35,7 +35,7 @@ export function PasswordInput(
           {...rest}
           type={show ? "text" : "password"}
           className={
-            "w-full rounded-lg border border-gray-300 px-3 py-2 pr-12 text-sm outline-none focus:ring-2 focus:ring-[#562C85]/15 " +
+            "w-full rounded-lg border border-gray-300 px-3 py-2 pr-12 text-sm outline-none focus:ring-2 focus:ring-primary-100 " +
             className
           }
         />
@@ -64,7 +64,7 @@ export function Checkbox(props: {
         name={props.name}
         checked={props.checked}
         onChange={props.onChange}
-        className="h-4 w-4 rounded border-gray-300 text-[#562C85] focus:ring-[#562C85]/30"
+        className="h-4 w-4 rounded border-primary-300 text-primary-500 focus:ring-primary-100"
       />
       <span>{props.label}</span>
     </label>
@@ -180,7 +180,7 @@ export function OtpInput(props: {
           value={v}
           onChange={(e) => handleChange(idx, e.target.value)}
           onKeyDown={(e) => handleKeyDown(idx, e)}
-          className="h-12 w-11 rounded-lg border border-gray-300 text-center text-lg outline-none focus:ring-2 focus:ring-[#562C85]/15"
+          className="h-12 w-11 rounded-lg border border-gray-300 text-center text-lg outline-none focus:ring-2 focus:ring-primary-100"
         />
       ))}
     </div>
