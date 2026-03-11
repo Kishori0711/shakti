@@ -1,4 +1,8 @@
 /** @type {import('next').NextConfig} */
+
+const MAIN_API = process.env.NEXT_PUBLIC_MAIN_API;
+const CHATBOT_API = process.env.NEXT_PUBLIC_CHATBOT_API;
+
 const nextConfig = {
   images: {
     remotePatterns: [
@@ -13,11 +17,11 @@ const nextConfig = {
     return [
       {
         source: "/api/:path*",
-        destination: "http://20.244.10.145:3000/api/:path*",
+        destination: `${MAIN_API}/api/:path*`,
       },
-       {
+      {
         source: "/chatbot/:path*",
-        destination: "http://CHATBOT_SERVER:4000/:path*",
+        destination: `${CHATBOT_API}/:path*`,
       },
     ];
   },

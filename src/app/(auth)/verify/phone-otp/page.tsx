@@ -14,8 +14,8 @@ import {
 import { auth } from "@/lib/firebase/setup";
 
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
-import { firebaseAuth as firebaseAuthThunk } from "@/store/slices/auth/authThunks";
-import { clearAuthError, clearAuthMessage } from "@/store/slices/auth/authSlice";
+import { firebaseAuth as firebaseAuthThunk } from "@/features/auth/authThunks";
+import { clearAuthError, clearAuthMessage } from "@/features/auth/authSlice";
 
 type Flow = "login" | "signup";
 

@@ -5,57 +5,62 @@
 
 /* GLOBAL THEME COLORS */
 @theme {
-   --color-primary-50: #fff4ef;
+  --color-primary-50: #fff4ef;
   --color-primary-100: #ffe6dc;
   --color-primary-200: #ffccb8;
   --color-primary-300: #ffad8a;
   --color-primary-400: #ff8a5f;
-  --color-primary-500: #F26935; 
+  --color-primary-500: #f26935;
   --color-primary-600: #e65a24;
   --color-primary-700: #c5481b;
   --color-primary-800: #9d3a18;
   --color-primary-900: #7e3218;
   --color-primary-950: #44170c;
 
- --color-secondary-50: #fffae8;
---color-secondary-100: #fff3c2;
---color-secondary-200: #ffe88a;
---color-secondary-300: #ffda4d;
---color-secondary-400: #ffcb1f;
---color-secondary-500: #FEBF2C;
---color-secondary-600: #d89c12;
---color-secondary-700: #b37b0e;
---color-secondary-800: #8c5f0c;
---color-secondary-900: #6d4a0b;
---color-secondary-950: #3f2704;
+  --color-secondary-50: #fffae8;
+  --color-secondary-100: #fff3c2;
+  --color-secondary-200: #ffe88a;
+  --color-secondary-300: #ffda4d;
+  --color-secondary-400: #ffcb1f;
+  --color-secondary-500: #febf2c;
+  --color-secondary-600: #d89c12;
+  --color-secondary-700: #b37b0e;
+  --color-secondary-800: #8c5f0c;
+  --color-secondary-900: #6d4a0b;
+  --color-secondary-950: #3f2704;
 
-  --color-accent: #CF3438;
+  --color-accent: #cf3438;
 
   --color-border: #e5e7eb;
   --color-background: #ffffff;
   --color-foreground: #0f172a;
+
+  --font-sans: var(--font-open-sans);
+  --font-heading: var(--font-montserrat);
+  --font-ui: var(--font-lato);
 }
 
 body {
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-open-sans);
+  /* font-family: Arial, Helvetica, sans-serif; */
   background: var(--color-background);
   color: var(--color-foreground);
 }
 
 /* Phone Input Styles */
-.react-international-phone-input-container{
+.react-international-phone-input-container {
   border: 1px solid var(--color-border);
   border-radius: 0.5rem;
   background: white;
   padding: 0;
 }
 
-.react-international-phone-input-container:focus-within{
+.react-international-phone-input-container:focus-within {
   box-shadow: 0 0 0 4px rgba(86, 44, 133, 0.12);
   border-color: rgba(86, 44, 133, 0.35);
 }
 
-.react-international-phone-input{
+.react-international-phone-input {
   border: 0 !important;
   outline: none !important;
   box-shadow: none !important;
@@ -63,7 +68,7 @@ body {
   padding: 10px 12px;
 }
 
-.react-international-phone-country-selector-button{
+.react-international-phone-country-selector-button {
   border: 0 !important;
   background: transparent !important;
 }

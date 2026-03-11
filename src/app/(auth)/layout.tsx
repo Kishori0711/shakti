@@ -3,6 +3,7 @@ import Image from "next/image";
 import logo from "../../assets/logo/Shakti 2047 Final Logo CC.png";
 import RightGroupImg from "../../assets/auth/group-women-saris-with-their-arms-crossed 1.png";
 import RecaptchaMount from "../../components/auth/RecaptchaMount";
+import { Suspense } from "react";
 
 export default function AuthLayout({ children }: { children: ReactNode }) {
   return (
@@ -25,7 +26,9 @@ export default function AuthLayout({ children }: { children: ReactNode }) {
           {/* Form Container */}
           <div className="flex-1 flex items-center justify-center">
             <div className="w-full max-w-md">
-              {children}
+             <Suspense fallback={<div className="text-center">Loading...</div>}>
+                {children}
+              </Suspense>
               <RecaptchaMount />
             </div>
           </div>

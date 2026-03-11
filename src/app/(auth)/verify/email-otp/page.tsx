@@ -6,8 +6,8 @@ import toast from "react-hot-toast";
 
 import { OtpInput, Button } from "../../../../components/ui/FormInputs";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
-import { resendRegisterOtp, verifyRegisterOtp } from "@/store/slices/auth/authThunks";
-import { clearAuthError, clearAuthMessage } from "@/store/slices/auth/authSlice";
+import { resendRegisterOtp, verifyRegisterOtp } from "@/features/auth/authThunks";
+import { clearAuthError, clearAuthMessage } from "@/features/auth/authSlice";
 
 const RESEND_SECONDS = 30;
 

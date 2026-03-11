@@ -1,14 +1,14 @@
 import { configureStore } from "@reduxjs/toolkit"
-import counterReducer from "./slices/counterSlice"
-import authReducer from "./slices/auth/authSlice"
+import chatbotReducer from "@/features/chatbot/chatbotSlice";
+import authReducer from "../features/auth/authSlice"
 
 export const store = configureStore({
   reducer: {
-    counter: counterReducer,
+    chatbot: chatbotReducer,
      auth: authReducer,
   }
 })
 
 // types
-export type RootState = ReturnType<typeof store.getState>
-export type AppDispatch = typeof store.dispatch
+export type RootState = ReturnType<typeof store.getState>;
+export type AppDispatch = typeof store.dispatch;

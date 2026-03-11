@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
-import { logout } from "@/store/slices/auth/authThunks";
+import { logout } from "@/features/auth/authThunks";
 
 type Props = {
   title?: string;

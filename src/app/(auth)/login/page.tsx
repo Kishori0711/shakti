@@ -18,8 +18,8 @@ import {
 } from "../../../components/ui/FormInputs";
 
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
-import { login as loginThunk } from "@/store/slices/auth/authThunks";
-import { clearAuthError, clearAuthMessage } from "@/store/slices/auth/authSlice";
+import { login as loginThunk } from "@/features/auth/authThunks";
+import { clearAuthError, clearAuthMessage } from "@/features/auth/authSlice";
 
 type Method = "email" | "phone";
 const normalizePhone = (phone: string) => phone.replace(/[^\d+]/g, "");

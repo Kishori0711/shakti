@@ -8,7 +8,7 @@ import { auth } from "../../lib/firebase/setup";
 import GoogleButton from "./GoogleButton";
 
 import { useAppDispatch } from "@/store/hooks";
-import { googleAuth } from "@/store/slices/auth/authThunks";
+import { googleAuth } from "@/features/auth/authThunks";
 
 export default function GoogleContinue({
   text = "Continue with Google",

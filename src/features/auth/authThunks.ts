@@ -1,6 +1,6 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import type { AxiosError } from "axios";
-import api from "@/lib/client/api";
+import api from "@/lib/client/mainApi";
 
 // ---- API response types
 export type SendOtpResponse = {
