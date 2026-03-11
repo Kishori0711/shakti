@@ -32,7 +32,7 @@ export default function AuthLayout({ children }: { children: ReactNode }) {
               <RecaptchaMount />
             </div>
           </div>
-
+ 
           {/* Footer */}
           <p className="text-xs text-gray-400 text-center mt-4">
             © 2026 Shakti 2047. All rights reserved.
