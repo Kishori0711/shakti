@@ -4,6 +4,8 @@ import React, { useRef, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { signInWithPhoneNumber, RecaptchaVerifier } from "firebase/auth";
+import toast from "react-hot-toast";
+
 import { auth } from "../../../lib/firebase/setup";
 import AuthMethodSwitch from "../../../components/auth/AuthMethodSwitch";
 import GoogleContinue from "../../../components/auth/GoogleContinue";
@@ -15,27 +17,29 @@ import {
   InternationalPhoneInput,
 } from "../../../components/ui/FormInputs";
 
-type Method = "email" | "phone";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
+import { sendRegisterOtp } from "@/store/slices/auth/authThunks";
+import { clearAuthError, clearAuthMessage } from "@/store/slices/auth/authSlice";
 
+type Method = "email" | "phone";
 const normalizePhone = (phone: string) => phone.replace(/[^\d+]/g, "");
 
 export default function SignupPage() {
   const sp = useSearchParams();
   const router = useRouter();
+  const dispatch = useAppDispatch();
+
   const method = ((sp.get("method") as Method) || "email") as Method;
+  const { sendOtpLoading } = useAppSelector((s) => s.auth);
 
   const [formData, setFormData] = useState({
-    fullName: "",
     email: "",
     password: "",
+    confirmPassword: "",
     terms: false,
   });
 
   const [phone, setPhone] = useState("");
-
-  const [loading, setLoading] = useState(false);
-  const [msg, setMsg] = useState<string | null>(null);
-
   const recaptchaRef = useRef<RecaptchaVerifier | null>(null);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -55,18 +59,53 @@ export default function SignupPage() {
     return verifier;
   };
 
-  const onPhoneSendOtp = async () => {
-    setMsg(null);
+  const onEmailSendOtp = async () => {
+    dispatch(clearAuthError());
+    dispatch(clearAuthMessage());
 
     if (!formData.terms) {
-      setMsg("Please accept Terms & Privacy Policy.");
+      toast.error("Please accept Terms & Privacy Policy.");
+      return;
+    }
+    if (!formData.email || !formData.password || !formData.confirmPassword) {
+      toast.error("All fields are required");
+      return;
+    }
+    if (formData.password !== formData.confirmPassword) {
+      toast.error("Password and Confirm Password do not match");
       return;
     }
 
-    setLoading(true);
+    try {
+      await dispatch(
+        sendRegisterOtp({
+          email: formData.email,
+          password: formData.password,
+        })
+      ).unwrap();
+
+      sessionStorage.setItem("pendingEmail", formData.email);
+      sessionStorage.setItem("emailOtpSentAt", Date.now().toString());
+
+      toast.success("OTP sent to email");
+      router.push(`/verify/email-otp?email=${encodeURIComponent(formData.email)}`);
+    } catch (e: any) {
+      toast.error(typeof e === "string" ? e : "Failed to send OTP");
+    }
+  };
+
+  const onPhoneSendOtp = async () => {
+    if (!formData.terms) {
+      toast.error("Please accept Terms & Privacy Policy.");
+      return;
+    }
+
     try {
       const phoneE164 = normalizePhone(phone);
-      if (!phoneE164 || phoneE164.length < 8) throw new Error("Enter valid phone number.");
+      if (!phoneE164 || phoneE164.length < 8) {
+        toast.error("Enter valid phone number.");
+        return;
+      }
 
       const verifier = await ensureRecaptcha();
       const confirmation = await signInWithPhoneNumber(auth, phoneE164, verifier);
@@ -75,16 +114,37 @@ export default function SignupPage() {
       sessionStorage.setItem("phoneVerificationId", confirmation.verificationId);
       sessionStorage.setItem("phoneNumber", phoneE164);
       sessionStorage.setItem("phoneFlow", "signup");
-      sessionStorage.setItem("signupFullName", formData.fullName);
 
+      toast.success("OTP sent");
       router.push("/verify/phone-otp?flow=signup");
     } catch (err: any) {
       console.error(err);
-      setMsg(err?.message ?? "Failed to send OTP");
-    } finally {
-      setLoading(false);
+      toast.error(err?.message ?? "Failed to send OTP");
     }
   };
+
+  const termsLabel = (
+    <>
+      I agree to Shakti&apos;s{" "}
+      <Link href="#" className="text-primary-500 font-medium">
+        Privacy Policy
+      </Link>{" "}
+      and{" "}
+      <Link href="#" className="text-primary-500 font-medium">
+        Terms
+      </Link>
+    </>
+  );
+
+  const emailButtonDisabled =
+    sendOtpLoading ||
+    !formData.terms ||
+    !formData.email ||
+    !formData.password ||
+    !formData.confirmPassword ||
+    formData.password !== formData.confirmPassword;
+
+  const phoneButtonDisabled = !formData.terms;
 
   return (
     <div className="w-full space-y-3">
@@ -97,19 +157,6 @@ export default function SignupPage() {
           <AuthMethodSwitch />
         </div>
       </div>
-
-      {msg && (
-        <div className="rounded-lg bg-gray-100 px-3 py-2 text-sm text-gray-800">{msg}</div>
-      )}
-
-      <Input
-        label="Full Name"
-        type="text"
-        name="fullName"
-        placeholder="Enter your full name"
-        value={formData.fullName}
-        onChange={handleChange}
-      />
 
       {method === "email" ? (
         <>
@@ -128,8 +175,23 @@ export default function SignupPage() {
             value={formData.password}
             onChange={handleChange}
           />
-          <Button type="button" disabled>
-            Create Account (email backend later)
+          <PasswordInput
+            label="Confirm Password"
+            name="confirmPassword"
+            placeholder="Re-enter password"
+            value={formData.confirmPassword}
+            onChange={handleChange}
+          />
+
+          <Checkbox
+            name="terms"
+            checked={formData.terms}
+            onChange={handleChange}
+            label={termsLabel}
+          />
+
+          <Button type="button" disabled={emailButtonDisabled} onClick={onEmailSendOtp}>
+            {sendOtpLoading ? "Sending OTP..." : "Send OTP"}
           </Button>
         </>
       ) : (
@@ -145,23 +207,14 @@ export default function SignupPage() {
             name="terms"
             checked={formData.terms}
             onChange={handleChange}
-            label={
-              <>
-                I agree to Shakti&apos;s{" "}
-                <Link href="#" className="text-primary-500 font-medium">
-                  Privacy Policy
-                </Link>{" "}
-                and{" "}
-                <Link href="#" className="text-primary-500 font-medium">
-                  Terms
-                </Link>
-              </>
-            }
+            label={termsLabel}
           />
 
-          <Button type="button" disabled={loading} onClick={onPhoneSendOtp}>
-            {loading ? "Sending..." : "Send OTP"}
+          <Button type="button" disabled={phoneButtonDisabled} onClick={onPhoneSendOtp}>
+            Send OTP
           </Button>
+
+          <div id="recaptcha-container" />
         </>
       )}
 

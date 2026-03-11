@@ -3,11 +3,9 @@
 import React, { useRef, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
-import {
-  signInWithEmailAndPassword,
-  signInWithPhoneNumber,
-  RecaptchaVerifier,
-} from "firebase/auth";
+import { signInWithPhoneNumber, RecaptchaVerifier } from "firebase/auth";
+import toast from "react-hot-toast";
+
 import { auth } from "../../../lib/firebase/setup";
 import AuthMethodSwitch from "../../../components/auth/AuthMethodSwitch";
 import GoogleContinue from "../../../components/auth/GoogleContinue";
@@ -19,15 +17,20 @@ import {
   InternationalPhoneInput,
 } from "../../../components/ui/FormInputs";
 
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
+import { login as loginThunk } from "@/store/slices/auth/authThunks";
+import { clearAuthError, clearAuthMessage } from "@/store/slices/auth/authSlice";
 
 type Method = "email" | "phone";
-
 const normalizePhone = (phone: string) => phone.replace(/[^\d+]/g, "");
 
 export default function LoginPage() {
   const sp = useSearchParams();
   const router = useRouter();
+  const dispatch = useAppDispatch();
+
   const method = ((sp.get("method") as Method) || "email") as Method;
+  const { loginLoading } = useAppSelector((s) => s.auth);
 
   const [formData, setFormData] = useState({
     email: "",
@@ -35,11 +38,7 @@ export default function LoginPage() {
     remember: false,
   });
 
-  const [phone, setPhone] = useState(""); 
-
-  const [loading, setLoading] = useState(false);
-  const [msg, setMsg] = useState<string | null>(null);
-
+  const [phone, setPhone] = useState("");
   const recaptchaRef = useRef<RecaptchaVerifier | null>(null);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -60,26 +59,40 @@ export default function LoginPage() {
   };
 
   const onEmailLogin = async () => {
-    setMsg(null);
-    setLoading(true);
+    dispatch(clearAuthError());
+    dispatch(clearAuthMessage());
+
+    if (!formData.email || !formData.password) {
+      toast.error("Email and password required");
+      return;
+    }
+
     try {
-      // email backend later (demo only)
-      await signInWithEmailAndPassword(auth, formData.email, formData.password);
-      setMsg("Email login (demo). Backend integration pending.");
-    } catch (err: any) {
-      setMsg(err?.message ?? "Login failed");
-    } finally {
-      setLoading(false);
+      await dispatch(
+        loginThunk({
+          email: formData.email,
+          password: formData.password,
+          rememberMe: formData.remember,
+        })
+      ).unwrap();
+
+      toast.success("Login successful");
+      router.replace("/");
+    } catch (e: any) {
+      toast.error(typeof e === "string" ? e : "Login failed");
     }
   };
 
   const onPhoneSendOtp = async () => {
-    setMsg(null);
-    setLoading(true);
+    dispatch(clearAuthError());
+    dispatch(clearAuthMessage());
 
     try {
       const phoneE164 = normalizePhone(phone);
-      if (!phoneE164 || phoneE164.length < 8) throw new Error("Enter valid phone number.");
+      if (!phoneE164 || phoneE164.length < 8) {
+        toast.error("Enter valid phone number.");
+        return;
+      }
 
       const verifier = await ensureRecaptcha();
       const confirmation = await signInWithPhoneNumber(auth, phoneE164, verifier);
@@ -87,13 +100,13 @@ export default function LoginPage() {
       sessionStorage.setItem("phoneVerificationId", confirmation.verificationId);
       sessionStorage.setItem("phoneNumber", phoneE164);
       sessionStorage.setItem("phoneFlow", "login");
+      sessionStorage.setItem("phoneOtpSentAt", Date.now().toString());
 
+      toast.success("OTP sent");
       router.push("/verify/phone-otp?flow=login");
     } catch (err: any) {
       console.error(err);
-      setMsg(err?.message ?? "Failed to send OTP");
-    } finally {
-      setLoading(false);
+      toast.error(err?.message ?? "Failed to send OTP");
     }
   };
 
@@ -108,12 +121,6 @@ export default function LoginPage() {
           <AuthMethodSwitch />
         </div>
       </div>
-
-      {msg && (
-        <div className="rounded-lg bg-gray-100 px-3 py-2 text-sm text-gray-800">
-          {msg}
-        </div>
-      )}
 
       {method === "email" ? (
         <>
@@ -140,14 +147,13 @@ export default function LoginPage() {
               onChange={handleChange}
               label="Remember me"
             />
-            {/* only email */}
             <Link href="#" className="text-sm font-medium text-primary-500 hover:underline">
               Forgot Password?
             </Link>
           </div>
 
-          <Button type="button" disabled={loading} onClick={onEmailLogin}>
-            {loading ? "Please wait..." : "Sign In"}
+          <Button type="button" disabled={loginLoading} onClick={onEmailLogin}>
+            {loginLoading ? "Please wait..." : "Sign In"}
           </Button>
         </>
       ) : (
@@ -159,9 +165,11 @@ export default function LoginPage() {
             defaultCountry="in"
           />
 
-          <Button type="button" disabled={loading} onClick={onPhoneSendOtp}>
-            {loading ? "Sending..." : "Send OTP"}
+          <Button type="button" onClick={onPhoneSendOtp}>
+            Send OTP
           </Button>
+
+          <div id="recaptcha-container" />
         </>
       )}
 

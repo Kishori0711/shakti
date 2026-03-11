@@ -2,50 +2,72 @@
 
 import React, { useEffect, useRef, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
-import { OtpInput, Button } from "../../../../components/ui/FormInputs";
+import toast from "react-hot-toast";
+
+import { OtpInput, Button } from "@/components/ui/FormInputs";
 import {
   PhoneAuthProvider,
   signInWithCredential,
   RecaptchaVerifier,
   signInWithPhoneNumber,
-  updateProfile,
 } from "firebase/auth";
-import { auth, db } from "@/lib/firebase/setup";
-import { doc, serverTimestamp, setDoc } from "firebase/firestore";
+import { auth } from "@/lib/firebase/setup";
+
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
+import { firebaseAuth as firebaseAuthThunk } from "@/store/slices/auth/authThunks";
+import { clearAuthError, clearAuthMessage } from "@/store/slices/auth/authSlice";
 
 type Flow = "login" | "signup";
 
 const RESEND_SECONDS = 30;
+
 const normalizePhone = (phone: string) => phone.replace(/[^\d+]/g, "");
+
+function getRemainingCooldown(storageKey: string) {
+  if (typeof window === "undefined") return 0;
+
+  const sentAtStr = sessionStorage.getItem(storageKey);
+  if (!sentAtStr) return 0;
+
+  const sentAt = Number(sentAtStr);
+  if (!Number.isFinite(sentAt)) return 0;
+
+  const elapsed = Math.floor((Date.now() - sentAt) / 1000);
+  return Math.max(RESEND_SECONDS - elapsed, 0);
+}
+
+function getErrorMessage(err: unknown) {
+  if (typeof err === "string") return err;
+  if (err instanceof Error) return err.message;
+  return "Something went wrong";
+}
 
 export default function PhoneOtpPage() {
   const sp = useSearchParams();
   const router = useRouter();
+  const dispatch = useAppDispatch();
+
   const flow = (sp.get("flow") as Flow) || "login";
+  const { firebaseLoading } = useAppSelector((s) => s.auth);
 
   const [otp, setOtp] = useState<string[]>(["", "", "", "", "", ""]);
-  const [loading, setLoading] = useState(false);
-  const [msg, setMsg] = useState<string | null>(null);
 
-  const [cooldown, setCooldown] = useState(0);
+  // ✅ No useEffect setState: initial cooldown computed here
+  const [cooldown, setCooldown] = useState<number>(() =>
+    getRemainingCooldown("phoneOtpSentAt")
+  );
 
   const recaptchaRef = useRef<RecaptchaVerifier | null>(null);
 
-  // cooldown timer (persist via sessionStorage)
-  useEffect(() => {
-    const sentAtStr = sessionStorage.getItem("phoneOtpSentAt");
-    if (!sentAtStr) return;
-
-    const sentAt = Number(sentAtStr);
-    const elapsed = Math.floor((Date.now() - sentAt) / 1000);
-    const remaining = Math.max(RESEND_SECONDS - elapsed, 0);
-    setCooldown(remaining);
-  }, []);
-
+  // countdown timer
   useEffect(() => {
     if (cooldown <= 0) return;
-    const t = setInterval(() => setCooldown((c) => Math.max(c - 1, 0)), 1000);
-    return () => clearInterval(t);
+
+    const id = window.setInterval(() => {
+      setCooldown((c) => Math.max(c - 1, 0));
+    }, 1000);
+
+    return () => window.clearInterval(id);
   }, [cooldown]);
 
   const ensureRecaptcha = async () => {
@@ -61,70 +83,59 @@ export default function PhoneOtpPage() {
   };
 
   const onVerify = async () => {
-    setMsg(null);
-    setLoading(true);
+    dispatch(clearAuthError());
+    dispatch(clearAuthMessage());
 
     try {
       const verificationId = sessionStorage.getItem("phoneVerificationId");
-      if (!verificationId) throw new Error("OTP session expired. Please go back and resend OTP.");
+      if (!verificationId) {
+        toast.error("OTP session expired. Please go back and resend OTP.");
+        return;
+      }
 
       const code = otp.join("");
-      if (code.length !== 6) throw new Error("Please enter 6-digit OTP.");
+      if (code.length !== 6) {
+        toast.error("Please enter 6-digit OTP.");
+        return;
+      }
 
       const credential = PhoneAuthProvider.credential(verificationId, code);
       const cred = await signInWithCredential(auth, credential);
 
-      if (flow === "signup") {
-        const name = sessionStorage.getItem("signupFullName") || "";
-        if (name) await updateProfile(cred.user, { displayName: name });
-      }
+      const idToken = await cred.user.getIdToken();
+      await dispatch(firebaseAuthThunk({ idToken })).unwrap();
 
-      await setDoc(
-        doc(db, "users", cred.user.uid),
-        {
-          uid: cred.user.uid,
-          name: cred.user.displayName ?? "",
-          phone: cred.user.phoneNumber ?? "",
-          signupType: "phone",
-          lastLoginAt: serverTimestamp(),
-          ...(flow === "signup" ? { createdAt: serverTimestamp() } : {}),
-          updatedAt: serverTimestamp(),
-        },
-        { merge: true }
-      );
-
-      // cleanup
       sessionStorage.removeItem("phoneVerificationId");
       sessionStorage.removeItem("phoneOtpSentAt");
 
+      toast.success(flow === "signup" ? "Signup successful" : "Login successful");
       router.replace("/");
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error(err);
-      setMsg(err?.message ?? "OTP verification failed");
-    } finally {
-      setLoading(false);
+      toast.error(getErrorMessage(err));
     }
   };
 
   const onResend = async () => {
-    setMsg(null);
-
     if (cooldown > 0) {
-      setMsg(`Please wait ${cooldown}s to resend OTP.`);
+      toast.error(`Please wait ${cooldown}s to resend OTP.`);
       return;
     }
 
-    setLoading(true);
     try {
       const phoneRaw = sessionStorage.getItem("phoneNumber");
-      if (!phoneRaw) throw new Error("Phone number missing. Please go back.");
+      if (!phoneRaw) {
+        toast.error("Phone number missing. Please go back.");
+        return;
+      }
 
       const phone = normalizePhone(phoneRaw);
 
-      // reset recaptcha
       try {
         recaptchaRef.current?.clear();
-      } catch {}
+      } catch {
+        // ignore
+      }
       recaptchaRef.current = null;
 
       const verifier = await ensureRecaptcha();
@@ -134,12 +145,10 @@ export default function PhoneOtpPage() {
       sessionStorage.setItem("phoneOtpSentAt", Date.now().toString());
 
       setCooldown(RESEND_SECONDS);
-      setMsg("OTP resent.");
-    } catch (err: any) {
+      toast.success("OTP resent.");
+    } catch (err: unknown) {
       console.error(err);
-      setMsg(err?.message ?? "Failed to resend OTP");
-    } finally {
-      setLoading(false);
+      toast.error(getErrorMessage(err));
     }
   };
 
@@ -152,17 +161,10 @@ export default function PhoneOtpPage() {
         </p>
       </div>
 
-      {msg && (
-        <div className="rounded-lg bg-gray-100 px-3 py-2 text-sm text-gray-800">
-          {msg}
-        </div>
-      )}
-
-      {/* ✅ upgraded OTP input: auto move + paste */}
       <OtpInput length={6} value={otp} onChange={setOtp} autoFocus />
 
-      <Button type="button" disabled={loading} onClick={onVerify}>
-        {loading ? "Verifying..." : "Verify & Continue"}
+      <Button type="button" disabled={firebaseLoading} onClick={onVerify}>
+        {firebaseLoading ? "Verifying..." : "Verify & Continue"}
       </Button>
 
       <p className="text-sm text-gray-600">
@@ -170,12 +172,14 @@ export default function PhoneOtpPage() {
         <button
           type="button"
           onClick={onResend}
-          disabled={loading || cooldown > 0}
+          disabled={firebaseLoading || cooldown > 0}
           className="text-[#562C85] font-semibold hover:underline disabled:opacity-60"
         >
           {cooldown > 0 ? `Resend in ${cooldown}s` : "Resend OTP"}
         </button>
       </p>
+
+      <div id="recaptcha-container" />
     </div>
   );
 }

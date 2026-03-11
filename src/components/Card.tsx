@@ -87,12 +87,12 @@ const Card: React.FC<Props> = ({ course, onClick, icons }) => {
                 {course.tags}
               </span>
             )}
-
+{/* 
             {course.language?.length > 0 && (
               <span className="text-[#5B2A86] text-sm bg-[#F7F2EB] px-3 py-1 rounded-md font-medium">
                 {course.language.join(", ")}
               </span>
-            )}
+            )} */}
           </div>
 
           {/* Rating */}

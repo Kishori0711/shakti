@@ -207,10 +207,6 @@ export function InternationalPhoneInput(props: {
         onChange={props.onChange}
         placeholder={props.placeholder ?? "Enter phone number"}
       />
-
-      <p className="text-xs text-gray-500">
-        E.164: <span className="font-mono">{props.value || "-"}</span>
-      </p>
     </div>
   );
 }
