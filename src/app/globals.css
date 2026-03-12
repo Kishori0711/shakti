@@ -17,6 +17,18 @@
   --color-primary-900: #7e3218;
   --color-primary-950: #44170c;
 
+   /* --color-primary-50:  #e9ffea;
+  --color-primary-100: #c9ffcc;
+  --color-primary-200: #98ff9f;
+  --color-primary-300: #5cff69;
+  --color-primary-400: #35ff43;
+  --color-primary-500: #27f535;
+  --color-primary-600: #1ed12a;
+  --color-primary-700: #18a622;
+  --color-primary-800: #13841c;
+  --color-primary-900: #106c18;
+  --color-primary-950: #05390a; */
+
   --color-secondary-50: #fffae8;
   --color-secondary-100: #fff3c2;
   --color-secondary-200: #ffe88a;
@@ -71,4 +83,14 @@ body {
 .react-international-phone-country-selector-button {
   border: 0 !important;
   background: transparent !important;
+}
+
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
