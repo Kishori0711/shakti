@@ -121,7 +121,7 @@ export default function LoginPage() {
           <AuthMethodSwitch />
         </div>
       </div>
- 
+  
       {method === "email" ? (
         <>
           <Input
