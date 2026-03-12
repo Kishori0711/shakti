@@ -15,11 +15,11 @@ export default function AuthLayout({ children }: { children: ReactNode }) {
           <div className="absolute top-2 left-0  h-16 w-32 ">
             <Image
               src={logo}
+              width={200}
+              height={56}
               alt="Shakti"
-              fill
               priority
-              className="object-contain"
-              
+              className="object-contain" 
             />
           </div>
 

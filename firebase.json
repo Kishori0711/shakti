@@ -4,7 +4,7 @@
       "anonymous": true,
       "emailPassword": true,
       "googleSignIn": {
-        "oAuthBrandDisplayName": "My App",
+        "oAuthBrandDisplayName": "shakti",
         "supportEmail": "support@undefined.firebaseapp.com"
       }
     }
