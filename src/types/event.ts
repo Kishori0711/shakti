@@ -19,3 +19,17 @@ export type EventFilter = {
   language: string;
   priceRange: string;
 };
+
+
+export interface IEvent {
+  id: string;
+  thumbnailUrl: string;
+  title: string;
+  speaker: {
+    name: string;
+    title: string;
+    avatarUrl: string;
+  };
+  time: string;
+  date: string;
+}

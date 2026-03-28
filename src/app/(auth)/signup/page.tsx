@@ -123,6 +123,15 @@ export default function SignupPage() {
     }
   };
 
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (method === "email") {
+      onEmailSendOtp();
+    } else {
+      onPhoneSendOtp();
+    }
+  };
+
   const termsLabel = (
     <>
       I agree to Shakti&apos;s{" "}
@@ -147,13 +156,13 @@ export default function SignupPage() {
   const phoneButtonDisabled = !formData.terms;
 
   return (
-    <div className="w-full space-y-3">
+    <form onSubmit={handleSubmit} className="w-full space-y-3">
       <div>
         <div>
-          <h2 className="text-2xl font-semibold text-gray-900 mt-6">Get Started Now</h2>
+          <h2 className="text-xl font-semibold text-gray-900 mt-10">Get Started Now</h2>
           <p className="text-sm text-gray-500">Create your account to begin your journey.</p>
         </div>
-        <div className="mt-3">
+        <div className="mt-1">
           <AuthMethodSwitch />
         </div>
       </div>
@@ -190,7 +199,7 @@ export default function SignupPage() {
             label={termsLabel}
           />
 
-          <Button type="button" disabled={emailButtonDisabled} onClick={onEmailSendOtp}>
+          <Button type="submit" disabled={emailButtonDisabled}>
             {sendOtpLoading ? "Sending OTP..." : "Send OTP"}
           </Button>
         </>
@@ -210,7 +219,7 @@ export default function SignupPage() {
             label={termsLabel}
           />
 
-          <Button type="button" disabled={phoneButtonDisabled} onClick={onPhoneSendOtp}>
+          <Button type="submit" disabled={phoneButtonDisabled}>
             Send OTP
           </Button>
 
@@ -232,7 +241,7 @@ export default function SignupPage() {
         </span>
       </div>
 
-      <GoogleContinue text="Continue with Google" redirectTo="/" />
-    </div>
+      <GoogleContinue text="Continue with Google" redirectTo="/home" />
+    </form>
   );
 }

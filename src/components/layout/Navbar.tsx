@@ -3,39 +3,105 @@
 import { FiBell, FiLogOut, FiMenu, FiUser } from "react-icons/fi";
 import { GiHeartPlus } from "react-icons/gi";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import toast from "react-hot-toast";
+import type { RootState } from "@/store/store";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { logout } from "@/features/auth/authThunks";
+import { resetProfileState } from "@/features/profile/profileSlice";
+import {
+  fetchUserProfileThunk,
+  fetchProfileCompletionThunk, // ✅ NEW (for progress bar)
+} from "@/features/profile/profileThunks";
+import { useTranslation } from "@/hooks/useTranslation";
+import NotificationsModal from "@/components/notifications/NotificationsModal";
 
 type Props = {
   title?: string;
   onMenuClick: () => void;
 };
 
-export default function Navbar({
-  title = "Dashboard",
-  onMenuClick,
-}: Props) {
+export default function Navbar({ title = "Dashboard", onMenuClick }: Props) {
   const router = useRouter();
   const dispatch = useAppDispatch();
-  
-  const isAuthenticated = useAppSelector((state) => state.auth.isAuthenticated);
+  const [notifOpen, setNotifOpen] = useState(false);
+
+  const { t, loading } = useTranslation();
+
   const logoutLoading = useAppSelector((state) => state.auth.logoutLoading);
-  
+
+  // ✅ profile state
+  const profileData = useAppSelector((state) => state.profile.data);
+  const profileFetchStatus = useAppSelector(
+    (state) => state.profile.fetchStatus
+  );
+
+  // ✅ completion state (for dropdown progress bar)
+  const completion = useAppSelector((state) => state.profile.completion);
+  const completionStatus = useAppSelector(
+    (state) => state.profile.completionStatus
+  );
+
   const [dropdownOpen, setDropdownOpen] = useState(false);
+
+  const isAuth = useAppSelector((s: RootState) => s.auth.isAuthenticated);
+  console.log("Redux isAuthenticated flag:", isAuth);
+
+  // ✅ Load profile once (if not present)
+  useEffect(() => {
+    if (!profileData && profileFetchStatus !== "loading") {
+      dispatch(fetchUserProfileThunk());
+    }
+  }, [dispatch, profileData, profileFetchStatus]);
+
+  useEffect(() => {
+    if (!dropdownOpen) return;
+
+    // ✅ already loaded hai to dobara call mat karo
+    if (completionStatus === "succeeded" && completion) return;
+    if (completionStatus === "loading") return;
+
+    dispatch(fetchProfileCompletionThunk());
+  }, [dropdownOpen, completionStatus, completion, dispatch]);
+
+  const fullName = useMemo(() => {
+    const fn = profileData?.profile?.first_name?.trim() || "";
+    const ln = profileData?.profile?.last_name?.trim() || "";
+    return `${fn} ${ln}`.trim() || "My Account";
+  }, [profileData]);
+
+  const email = profileData?.email || "";
+  const avatar = profileData?.profile?.profile_photo_url || "";
+
+  const completionPercentage = completion
+    ? parseInt(completion.profile_completion, 10) || 0
+    : 0;
+
+  const completionLabel = useMemo(() => {
+    const p = completionPercentage;
+    if (p >= 100) return "Completed";
+    if (p >= 80) return "You're almost there!";
+    if (p >= 50) return "Keep going!";
+    return "Let's get started";
+  }, [completionPercentage]);
 
   const handleLogout = async () => {
     try {
       const res = await dispatch(logout()).unwrap();
+      dispatch(resetProfileState());
       toast.success(res.message || "Logout successful");
       setDropdownOpen(false);
-      router.replace("/login");
+      router.replace("/");
     } catch (error) {
       const message = typeof error === "string" ? error : "Logout failed";
       toast.error(message);
       console.error("Logout failed:", error);
     }
+  };
+
+  const goTo = (path: string) => {
+    setDropdownOpen(false);
+    router.push(path);
   };
 
   return (
@@ -45,12 +111,12 @@ export default function Navbar({
       border border-gray-200 shadow-sm"
     >
       {/* Left section */}
-      <div className="flex items-center gap-3 min-w-0">
+      <div className="flex min-w-0 items-center gap-3">
         <button
           type="button"
           onClick={onMenuClick}
           className="xl:hidden grid h-10 w-10 place-items-center rounded-xl
-          bg-primary-500 text-white shadow-sm hover:bg-primary-600 transition"
+  bg-primary-500 text-white shadow-sm hover:bg-primary-600 transition"
           aria-label="Open sidebar"
         >
           <FiMenu className="text-xl" />
@@ -62,27 +128,26 @@ export default function Navbar({
       </div>
 
       {/* Right section */}
-      <div className="flex items-center gap-3 relative">
-        
+      <div className="relative flex items-center gap-3">
         {/* Well-being button */}
         <button
           type="button"
           onClick={() => router.push("/well-being")}
-          className="hidden sm:inline-flex items-center gap-2 rounded-full
+          className="hidden sm:inline-flex items-center gap-2 cursor-pointer rounded-full
           bg-gray-900 text-white px-4 py-2.5 text-xs font-semibold
           hover:bg-gray-800 transition shadow-sm"
         >
           <span className="grid h-6 w-6 place-items-center rounded-full bg-white/10">
             <GiHeartPlus className="text-base" />
           </span>
-
-          Well-being Support
+          {loading ? "Loading..." : t("shaktiAI")}
         </button>
 
         {/* Notification */}
         <button
           type="button"
-          className="grid h-10 w-10 place-items-center rounded-full
+          onClick={() => setNotifOpen(true)}
+          className="grid h-10 w-10 place-items-center rounded-full cursor-pointer
           bg-gray-100 text-gray-700
           hover:bg-primary-50 hover:text-primary-600 transition"
           aria-label="Notifications"
@@ -90,84 +155,150 @@ export default function Navbar({
           <FiBell className="text-lg" />
         </button>
 
-        {/* Login/Signup or User Profile Dropdown */}
-        {!isAuthenticated ? (
+        {/* Profile menu */}
+        <div className="relative">
           <button
             type="button"
-            onClick={() => router.push("/login")}
-            className="inline-flex items-center gap-2 rounded-full
-            bg-primary-500 text-white px-4 py-2.5 text-sm font-semibold
-            hover:bg-primary-600 transition shadow-sm"
+            onClick={() => setDropdownOpen((v) => !v)}
+            className="grid h-10 w-10 place-items-center overflow-hidden rounded-full
+            bg-primary-500 text-white
+            hover:bg-primary-600 transition focus:outline-none"
+            aria-label="Profile"
           >
-            Sign Up / Login
-          </button>
-        ) : (
-          <div className="relative">
-            <button
-              type="button"
-              onClick={() => setDropdownOpen(!dropdownOpen)}
-              className="grid h-10 w-10 place-items-center rounded-full
-              bg-primary-500 text-white
-              hover:bg-primary-600 transition focus:outline-none"
-              aria-label="Profile"
-            >
-              <FiUser className="text-lg" />
-            </button>
-
-            {/* Dropdown Menu */}
-            {dropdownOpen && (
-              <>
-                {/* Backdrop */}
-                <div
-                  className="fixed inset-0 z-10"
-                  onClick={() => setDropdownOpen(false)}
-                />
-                
-                {/* Dropdown Content */}
-                <div className="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-lg border border-gray-100 py-2 z-20 animate-fade-in">
-                  <div className="px-4 py-2 border-b border-gray-100">
-                    <p className="text-sm font-medium text-gray-900">My Account</p>
-                    <p className="text-xs text-gray-500">Manage your profile</p>
-                  </div>
-                  
-                  <button
-                    type="button"
-                    onClick={() => router.push("/profile")}
-                    className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition"
-                  >
-                    My Profile
-                  </button>
-                  
-                  <button
-                    type="button"
-                    onClick={() => router.push("/settings")}
-                    className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition"
-                  >
-                    Settings
-                  </button>
-                  
-                  <div className="border-t border-gray-100 my-1" />
-                  
-                  <button
-                    type="button"
-                    onClick={handleLogout}
-                    disabled={logoutLoading}
-                    className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition flex items-center gap-2 disabled:opacity-50"
-                  >
-                    {logoutLoading ? (
-                      <span className="h-4 w-4 animate-spin rounded-full border-2 border-red-600 border-t-transparent" />
-                    ) : (
-                      <FiLogOut className="text-base" />
-                    )}
-                    Logout
-                  </button>
-                </div>
-              </>
+            {avatar ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={avatar}
+                alt="Profile"
+                className="h-full w-full object-cover cursor-pointer"
+              />
+            ) : (
+              <FiUser className="text-lg cursor-pointer" />
             )}
-          </div>
-        )}
+          </button>
 
+          {dropdownOpen && (
+            <>
+              {/* Backdrop */}
+              <button
+                type="button"
+                className="fixed inset-0 z-10 cursor-default"
+                onClick={() => setDropdownOpen(false)}
+                aria-label="Close menu"
+              />
+
+              {/* Dropdown */}
+              <div className="absolute right-0 mt-2 w-76 rounded-xl bg-white py-2 z-20 shadow-lg border border-gray-100">
+                {/* User Info */}
+                <div className="px-4 py-3 border-b border-gray-100 flex items-center gap-3">
+                  <div className="h-10 w-10 overflow-hidden rounded-full bg-primary-500 shrink-0">
+                    {avatar ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img
+                        src={avatar}
+                        alt="Profile"
+                        className="h-full w-full object-cover"
+                      />
+                    ) : (
+                      <div className="h-full w-full grid place-items-center text-white">
+                        <FiUser className="text-lg" />
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="min-w-0">
+                    <p className="text-sm font-medium text-gray-900 truncate">
+                      {fullName}
+                    </p>
+                    <p className="text-xs text-gray-500 truncate">
+                      {email || "—"}
+                    </p>
+                  </div>
+                </div>
+
+                {/* ✅ Profile Completion (Progress Bar) */}
+                <div className=" border-b border-gray-100">
+                  <div className="rounded-2xl  bg-white px-4 py-1">
+                    <p className="text-sm font-medium text-gray-900">
+                      Profile Completion
+                    </p>
+                    <div className="flex items-start justify-between gap-3">
+                      <div>
+                        {completionStatus === "loading" ? (
+                          <div className="mt-2 h-8 w-20 rounded bg-gray-100 animate-pulse" />
+                        ) : (
+                          <p className="mt-2 text-lg font-semibold text-gray-900">
+                            {completionPercentage}%
+                          </p>
+                        )}
+                      </div>
+                      <div >
+                        {completionStatus === "loading" ? (
+                          <div className="h-9 w-32 rounded-full bg-gray-100 animate-pulse" />
+                        ) : (
+                          <div className="rounded-full bg-gray-50 px-4 py-2 text-xs text-gray-600 border border-gray-200">
+                            {completionLabel}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
+                    <div className="mt-3 h-2.5 w-full rounded-full bg-gray-100 overflow-hidden">
+                      <div
+                        className="h-full rounded-full bg-gray-900 transition-all duration-500"
+                        style={{
+                          width: `${
+                            completionStatus === "loading"
+                              ? 0
+                              : Math.min(Math.max(completionPercentage, 0), 100)
+                          }%`,
+                        }}
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => goTo("/settings/my-profile")}
+                  className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition cursor-pointer"
+                >
+                  {loading ? "Loading..." : t("myProfile")}
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => goTo("/notifications")}
+                  className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition cursor-pointer"
+                >
+                  {loading ? "Loading..." : t("notifications")}
+                </button>
+
+                <div className="border-t border-gray-100 my-1" />
+
+                <button
+                  type="button"
+                  onClick={handleLogout}
+                  disabled={logoutLoading}
+                  className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition flex items-center gap-2 disabled:opacity-50"
+                >
+                  {logoutLoading ? (
+                    <span className="h-4 w-4 animate-spin rounded-full border-2 border-red-600 border-t-transparent" />
+                  ) : (
+                    <FiLogOut className="text-base" />
+                  )}
+                  {loading ? "Loading..." : t("logout")}
+                </button>
+              </div>
+            </>
+          )}
+        </div>
       </div>
+
+      <NotificationsModal
+        open={notifOpen}
+        onClose={() => setNotifOpen(false)}
+      />
     </header>
   );
 }

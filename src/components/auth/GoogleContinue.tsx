@@ -12,7 +12,7 @@ import { googleAuth } from "@/features/auth/authThunks";
 
 export default function GoogleContinue({
   text = "Continue with Google",
-  redirectTo = "/",
+  redirectTo = "/home",
 }: {
   text?: string;
   redirectTo?: string;

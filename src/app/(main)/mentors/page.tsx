@@ -1,17 +1,11 @@
 "use client";
 
-import { useRouter } from "next/navigation";
-import Image from "next/image";
-import { useState } from "react";
-import { FaUser } from "react-icons/fa";
+import { Input } from "@/components/ui/input";
 import { FiSearch } from "react-icons/fi";
-
-import crown_mentor from "@/assets/crown_mentor.svg";
-import verify from "@/assets/verify.svg";
-import recommended from "@/assets/recommended.svg";
-import group from "@/assets/Group.svg";
-import language_skill from "@/assets/language-skill.svg";
-import solar_medal_star_linear from "@/assets/solar_medal-star-linear.svg";
+import FilterSelect from "@/components/filters/FilterSelect";
+import { useState } from "react";
+import MentorCard from "@/components/mentors/MentoreCard";
+import RecommendedMentoreCard from "@/components/mentors/RecommendedMentoreCard";
 
 type Mentor = {
   id: string;
@@ -24,8 +18,11 @@ type Mentor = {
   reviews?: number;
   isTopMentor?: boolean;
   isVerified?: boolean;
-  isRecommended?: boolean;
   sessionPrice?: number;
+};
+
+type Props = {
+  mentors: Mentor[];
 };
 
 const mentorData: Mentor[] = [
@@ -41,119 +38,125 @@ const mentorData: Mentor[] = [
     reviews: 145,
     isTopMentor: true,
     isVerified: true,
-    isRecommended: true,
     sessionPrice: 2500,
   },
   {
     id: "2",
-    name: "Dr. Priya Mehta",
+    name: "Priya Mehta",
     avatar:
       "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=400",
-    expertise: "Financial Advisor HDFC Bank",
-    experience: "12+ years",
-    languages: "Hindi, English, Marathi",
-    sessions: 187,
-    reviews: 145,
+    expertise: "Financial Advisor",
+    experience: "10+ years",
+    languages: "Hindi, English",
+    sessions: 150,
+    reviews: 120,
     isVerified: true,
-    sessionPrice: 2500,
+    sessionPrice: 2000,
+  },
+  {
+    id: "3",
+    name: "Priya Mehta",
+    avatar:
+      "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=400",
+    expertise: "Financial Advisor",
+    experience: "10+ years",
+    languages: "Hindi, English",
+    sessions: 150,
+    reviews: 120,
+    isVerified: true,
+    sessionPrice: 2000,
+  },
+  {
+    id: "4",
+    name: "Priya Mehta",
+    avatar:
+      "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=400",
+    expertise: "Financial Advisor",
+    experience: "10+ years",
+    languages: "Hindi, English",
+    sessions: 150,
+    reviews: 120,
+    isVerified: true,
+    sessionPrice: 2000,
+  },
+  {
+    id: "5",
+    name: "Priya Mehta",
+    avatar:
+      "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=400",
+    expertise: "Financial Advisor",
+    experience: "10+ years",
+    languages: "Hindi, English",
+    sessions: 150,
+    reviews: 120,
+    isVerified: true,
+    sessionPrice: 2000,
+  },
+  {
+    id: "6",
+    name: "Priya Mehta",
+    avatar:
+      "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=400",
+    expertise: "Financial Advisor",
+    experience: "10+ years",
+    languages: "Hindi, English",
+    sessions: 150,
+    reviews: 120,
+    isVerified: true,
+    sessionPrice: 2000,
   },
 ];
 
 export default function MentorsPage() {
-  const router = useRouter();
-  const [search, setSearch] = useState("");
+  const [durations, setDurations] = useState("");
+  const [skills, setSkills] = useState("");
 
   return (
-    <div className="p-2">
-      <h2 className="text-2xl font-bold">Find Your Mentor</h2>
-      <p className="text-xs text-muted-foreground">
+    <div className="w-full min-h-screen p-3">
+      <h2 className="text-[#121632] text-2xl font-bold">Find Your Mentor</h2>
+      <p className="text-[#8f91a0] text-xs mb-6">
         Book 1:1 sessions with experienced professionals aligned to your goals.
       </p>
+      <div className="flex flex-col xl:flex-row gap-4 xl:items-center">
+        <div className="w-full md:max-w-sm">
+          <Input placeholder="Search courses..." icon={FiSearch} />
+        </div>
+        <div className="flex flex-wrap gap-3 xl:ml-auto w-full xl:w-auto">
+          <FilterSelect
+            placeholder="All Durations"
+            value={durations}
+            onChange={setDurations}
+            options={[
+              { value: "en", label: "English" },
+              { value: "hi", label: "Hindi" },
+              { value: "es", label: "Spanish" },
+            ]}
+          />
 
-      {/* search */}
-      <div className="mt-4 flex items-center gap-3">
-        <input
-          placeholder="Search mentor..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          className="border rounded-lg px-3 py-2 w-full md:w-80"
-        />
-        <FiSearch />
+          <FilterSelect
+            placeholder="All Skills"
+            value={skills}
+            onChange={setSkills}
+            options={[
+              { value: "career", label: "Career Growth" },
+              { value: "tech", label: "Technology" },
+              { value: "business", label: "Business" },
+            ]}
+          />
+        </div>
       </div>
 
-      {/* cards */}
-      <div className="mt-6 grid grid-cols-1 lg:grid-cols-2 gap-4">
-        {mentorData.map((mentor) => (
-          <article
-            key={mentor.id}
-            className="rounded-2xl border p-4 shadow-sm hover:shadow-md transition"
-          >
-            <div className="flex gap-4">
-              
-              {/* image */}
-              <div className="relative h-[180px] w-[180px] overflow-hidden rounded-xl">
-                <Image
-                  src={mentor.avatar}
-                  alt={mentor.name}
-                  fill
-                  className="object-cover"
-                />
+      <h6 className="text-[#121632] font-bold mt-6">Recommended Mentors</h6>
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-2 mt-2">
+        {mentorData.slice(0, 2).map((mentore) => (
+          <RecommendedMentoreCard key={mentore.id} mentor={mentore} />
+        ))}
+      </div>
+      <h6 className="text-[#121632] font-bold mt-6">Feature Mentors</h6>
 
-                {mentor.isTopMentor && (
-                  <span className="absolute top-2 left-2 bg-yellow-500 text-white text-xs px-2 py-1 rounded flex items-center gap-1">
-                    <Image src={crown_mentor} alt="" width={10} height={10} />
-                    Top Mentor
-                  </span>
-                )}
-              </div>
-
-              {/* content */}
-              <div className="flex-1">
-                <div className="flex justify-between">
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <h3 className="font-bold">{mentor.name}</h3>
-
-                      {mentor.isVerified && (
-                        <Image src={verify} alt="" width={20} height={20} />
-                      )}
-                    </div>
-
-                    <p className="text-sm text-muted-foreground">
-                      {mentor.expertise}
-                    </p>
-                  </div>
-
-                  {mentor.isRecommended && (
-                    <span className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded">
-                      Recommended
-                    </span>
-                  )}
-                </div>
-
-                <div className="mt-3 text-sm">
-                  {mentor.experience} • {mentor.languages}
-                </div>
-
-                <div className="mt-3 text-sm">
-                  {mentor.sessions} Sessions ({mentor.reviews} Reviews)
-                </div>
-
-                <div className="mt-4 flex justify-between items-center">
-                  <span className="font-bold text-primary">
-                    ₹{mentor.sessionPrice}
-                  </span>
-
-                  <button
-                    onClick={() => router.push(`/mentorProfile/${mentor.id}`)}
-                    className="bg-primary text-white px-4 py-2 rounded-lg"
-                  >
-                    Book Session
-                  </button>
-                </div>
-              </div>
-            </div>
-          </article>
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-2 mt-2">
+        {mentorData.map((mentore) => (
+          <MentorCard key={mentore.id} mentor={mentore} />
         ))}
       </div>
     </div>

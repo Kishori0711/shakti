@@ -12,7 +12,7 @@ export default function AuthLayout({ children }: { children: ReactNode }) {
         {/* LEFT SECTION */}
         <div className="w-full lg:w-1/2 flex flex-col p-8 relative">
           {/* Logo (TOP LEFT) */}
-          <div className="absolute top-2 left-0  h-16 w-32 ">
+          <div className="absolute top-2 left-0  h-14 w-28 ">
             <Image
               src={logo}
               width={200}

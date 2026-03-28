@@ -1,4 +1,4 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import {
   login,
   resendRegisterOtp,
@@ -7,12 +7,22 @@ import {
   firebaseAuth,
   googleAuth,
   logout,
+  type CurrentUserResponse,
 } from "./authThunks";
 
 export type AuthState = {
   pendingEmail: string | null;
   accessToken: string | null;
-  isAuthenticated: boolean;
+
+  /**
+   *  tri-state:
+   * null  => checking (no flicker)
+   * false => guest
+   * true  => authenticated
+   */
+  isAuthenticated: boolean | null;
+
+  user: CurrentUserResponse | null;
 
   sendOtpLoading: boolean;
   resendOtpLoading: boolean;
@@ -29,7 +39,9 @@ export type AuthState = {
 const initialState: AuthState = {
   pendingEmail: null,
   accessToken: null,
-  isAuthenticated: false,
+
+  isAuthenticated: null,
+  user: null,
 
   sendOtpLoading: false,
   resendOtpLoading: false,
@@ -47,6 +59,16 @@ const authSlice = createSlice({
   name: "auth",
   initialState,
   reducers: {
+
+    setAuthStatus(state, action: PayloadAction<boolean>) {
+      state.isAuthenticated = action.payload;
+
+      if (!action.payload) {
+        state.user = null;
+        state.accessToken = null;
+        state.pendingEmail = null;
+      }
+    },
     clearAuthError(state) {
       state.error = null;
     },
@@ -59,7 +81,9 @@ const authSlice = createSlice({
     clearAuthState(state) {
       state.pendingEmail = null;
       state.accessToken = null;
+      state.user = null;
       state.isAuthenticated = false;
+
       state.message = null;
       state.error = null;
     },
@@ -127,6 +151,7 @@ const authSlice = createSlice({
       })
       .addCase(login.rejected, (state, action) => {
         state.loginLoading = false;
+        state.isAuthenticated = false;
         state.error = action.payload || "Login failed";
       });
 
@@ -144,6 +169,7 @@ const authSlice = createSlice({
       })
       .addCase(firebaseAuth.rejected, (state, action) => {
         state.firebaseLoading = false;
+        state.isAuthenticated = false;
         state.error = action.payload || "Firebase auth failed";
       });
 
@@ -161,6 +187,7 @@ const authSlice = createSlice({
       })
       .addCase(googleAuth.rejected, (state, action) => {
         state.googleLoading = false;
+        state.isAuthenticated = false;
         state.error = action.payload || "Google auth failed";
       });
 
@@ -172,13 +199,23 @@ const authSlice = createSlice({
       })
       .addCase(logout.fulfilled, (state, action) => {
         state.logoutLoading = false;
+
         state.pendingEmail = null;
         state.accessToken = null;
+        state.user = null;
         state.isAuthenticated = false;
+
         state.message = action.payload.message || "Logout successful";
       })
       .addCase(logout.rejected, (state, action) => {
         state.logoutLoading = false;
+
+        // ✅ important: even if logout API fails, UI should be logged out
+        state.pendingEmail = null;
+        state.accessToken = null;
+        state.user = null;
+        state.isAuthenticated = false;
+
         state.error = action.payload || "Logout failed";
       });
   },
@@ -189,6 +226,7 @@ export const {
   clearAuthMessage,
   setPendingEmail,
   clearAuthState,
+  setAuthStatus,
 } = authSlice.actions;
 
 export default authSlice.reducer;

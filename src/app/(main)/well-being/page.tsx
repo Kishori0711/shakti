@@ -12,7 +12,7 @@ import {
   fetchPersonasThunk,
   startNewChatThunk,
 } from "@/features/chatbot/chatbotThunk";
-
+import { Skeleton } from "@/components/ui/skeleton";
 import { selectPersonas } from "@/features/chatbot/chatbotSelectors";
 
 type CompanionCardProps = {
@@ -82,7 +82,7 @@ function CompanionCard({
 export default function WellBeingPage() {
   const router = useRouter();
   const dispatch = useAppDispatch();
-
+  const loading = useAppSelector((state) => state.chatbot.personasLoading);
   const personas = useAppSelector(selectPersonas);
 
   useEffect(() => {
@@ -137,17 +137,39 @@ export default function WellBeingPage() {
 
         {/* Cards */}
         <main className="mt-8 grid grid-cols-1 justify-items-center gap-8 lg:grid-cols-3">
-          {personas.map((p) => (
-            <CompanionCard
-              key={p.slug}
-              name={p.name}
-              tagline={p.tagline}
-              tone={p.tone}
-              image={personaImages[p.slug]}
-              cardBg={personaBg[p.slug]}
-              onSelect={() => onSelect(p.slug)}
-            />
-          ))}
+          {loading
+            ? Array.from({ length: 3 }).map((_, i) => (
+                <div
+                  key={i}
+                  className="w-full max-w-md rounded-3xl border border-border bg-white p-6 flex flex-col items-center gap-4"
+                >
+                  {/* Image */}
+                  <Skeleton className="h-40 w-40 rounded-full" />
+
+                  {/* Name */}
+                  <Skeleton className="h-4 w-32" />
+
+                  {/* Tagline */}
+                  <Skeleton className="h-3 w-40" />
+
+                  {/* Tone */}
+                  <Skeleton className="h-3 w-48" />
+
+                  {/* Button */}
+                  <Skeleton className="h-10 w-full rounded-lg" />
+                </div>
+              ))
+            : personas.map((p) => (
+                <CompanionCard
+                  key={p.slug}
+                  name={p.name}
+                  tagline={p.tagline}
+                  tone={p.tone}
+                  image={personaImages[p.slug]}
+                  cardBg={personaBg[p.slug]}
+                  onSelect={() => onSelect(p.slug)}
+                />
+              ))}
         </main>
       </div>
     </div>

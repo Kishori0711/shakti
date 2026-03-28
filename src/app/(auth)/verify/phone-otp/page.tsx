@@ -109,7 +109,7 @@ export default function PhoneOtpPage() {
       sessionStorage.removeItem("phoneOtpSentAt");
 
       toast.success(flow === "signup" ? "Signup successful" : "Login successful");
-      router.replace("/");
+      router.replace("/home");
     } catch (err: unknown) {
       console.error(err);
       toast.error(getErrorMessage(err));

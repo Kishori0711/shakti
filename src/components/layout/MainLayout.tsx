@@ -87,6 +87,7 @@
 //   );
 // }
 
+// MainLayout.tsx
 
 "use client";
 
@@ -94,6 +95,7 @@ import { useState } from "react";
 import { usePathname } from "next/navigation";
 import Sidebar from "./Sidebar";
 import Navbar from "./Navbar";
+import { useTranslation } from "@/hooks/useTranslation";
 
 export default function MainLayout({
   children,
@@ -102,26 +104,47 @@ export default function MainLayout({
 }) {
   const [collapsed, setCollapsed] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const { t, loading } = useTranslation(); // ✅ Translation hook
 
   const pathname = usePathname();
-const routes = [
-  { path: "/learn/explore", title: "Explore" },
-  { path: "/learn/my-courses", title: "My Courses" },
-  { path: "/mentors", title: "Mentors" },
-  { path: "/events", title: "Events" },
-  { path: "/artsCulture", title: "Arts Culture" },
-  { path: "/social", title: "Social" },
-  { path: "/notifications", title: "Notifications" },
-  { path: "/", title: "Dashboard" },
-];
 
-  const pageTitle =
-  routes.find((route) => pathname.startsWith(route.path))?.title ||
-  "Dashboard";
+  // ✅ titleKey = translation key, NOT hardcoded English
+  const routes = [
+    { path: "/home", titleKey: "dashboard" },
+    { path: "/learn/explore", titleKey: "explore" },
+    { path: "/learn/my-courses", titleKey: "myCourses" },
+    { path: "/mentors", titleKey: "mentors" },
+    { path: "/events", titleKey: "events" },
+    { path: "/artsCulture", titleKey: "community" },
+    { path: "/social", titleKey: "community" },
+    { path: "/notifications", titleKey: "notifications" },
+    { path: "/settings/my-profile", titleKey: "settings" },
+    { path: "/settings/login-security", titleKey: "settings" },
+    { path: "/settings/notifications", titleKey: "settings" },
+    { path: "/settings/payments-billing", titleKey: "settings" },
+    { path: "/settings/terms-policies", titleKey: "settings" },
+    { path: "/settings/delete-account", titleKey: "settings" },
+    { path: "/newsfeed/explore", titleKey: "explore" },
+    { path: "/newsfeed/my-feed", titleKey: "myFeed" },
+    { path: "/well-being", titleKey: "wellBeing" },
+    { path: "/help", titleKey: "help_support" },
+    { path: "/purchase-history", titleKey: "purchaseHistory" },
+  ];
+
+  // ✅ Find matching route and translate
+  const matchedRoute = routes.find((route) =>
+    pathname.startsWith(route.path)
+  );
+
+  const pageTitle = loading
+    ? "..."
+    : matchedRoute
+      ? t(matchedRoute.titleKey)
+      : t("dashboard");
 
   return (
     <div className="h-screen bg-gray-100 overflow-hidden">
-      <div className="h-full flex gap-4 p-4 overflow-hidden">
+      <div className="h-full flex gap-4 p-2 overflow-hidden">
 
         {/* Sidebar */}
         <Sidebar

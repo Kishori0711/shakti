@@ -3,7 +3,7 @@
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { IoIosNotifications } from "react-icons/io";
-import { NOTIFICATIONS, type Notification, type NotificationType } from "./data";
+import { NOTIFICATIONS, type Notification, type NotificationType } from "../../../components/notifications/data";
 
 function cx(...classes: Array<string | false | undefined | null>) {
   return classes.filter(Boolean).join(" ");
@@ -134,10 +134,10 @@ export default function NotificationsPage() {
             >
               <div className="flex items-start justify-between gap-4">
                 <div className="flex items-start gap-4">
-                  <div className="relative mt-0.5 grid h-11 w-11 place-items-center rounded-full bg-purple-50 text-[#5b2c83]">
+                  <div className="relative mt-0.5 grid h-11 w-11 place-items-center rounded-full bg-primary-50 text-primary-500">
                     <NotificationIcon type={n.type} />
                     {n.unread && (
-                      <span className="absolute -right-0.5 -top-0.5 h-2.5 w-2.5 rounded-full bg-orange-400" />
+                      <span className="absolute -right-0.5 -top-0.5 h-2.5 w-2.5 rounded-full bg-primary-500" />
                     )}
                   </div>
 

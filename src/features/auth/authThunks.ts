@@ -1,5 +1,5 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import type { AxiosError } from "axios";
+import axios, { type AxiosError } from "axios";
 import api from "@/lib/client/mainApi";
 
 // ---- API response types
@@ -17,6 +17,39 @@ export type LogoutResponse = {
   message: string;
 };
 
+// (Type kept as-is; API call removed)
+export type CurrentUserResponse = {
+  id: string;
+  email: string | null;
+  phone: string | null;
+  status: string;
+  onboarding_complete: boolean;
+  screening_complete: boolean;
+  is_deleted: boolean;
+  is_email_verified: boolean;
+  is_phone_verified: boolean;
+  authProvider: string | null;
+  deleted_at: string | null;
+  profile_completion: number;
+  created_at: string;
+  updated_at: string;
+  profile: {
+    id: string;
+    user_id: string;
+    first_name: string | null;
+    last_name: string | null;
+    profile_photo_url: string | null;
+    timezone: string | null;
+    preferred_language: string | null;
+    dob: string | null;
+    career_stage: string | null;
+    created_at: string;
+    updated_at: string;
+    deleted_at: string | null;
+  } | null;
+  role: string[];
+};
+
 function getErrorMessage(err: unknown) {
   const error = err as AxiosError<{ message?: string; error?: string }>;
   return (
@@ -30,7 +63,6 @@ function getErrorMessage(err: unknown) {
 /**
  * 1) Send Register OTP
  * POST /api/v1/auth/send-register-otp
- * body: { email, password, role: "user" }
  */
 export const sendRegisterOtp = createAsyncThunk<
   SendOtpResponse,
@@ -40,11 +72,7 @@ export const sendRegisterOtp = createAsyncThunk<
   try {
     const res = await api.post<SendOtpResponse>(
       "/api/v1/auth/send-register-otp",
-      {
-        email,
-        password,
-        role: "user",
-      }
+      { email, password, role: "user" }
     );
     return res.data;
   } catch (err) {
@@ -55,7 +83,6 @@ export const sendRegisterOtp = createAsyncThunk<
 /**
  * 2) Verify OTP / Register
  * POST /api/v1/auth/register
- * body: { email, otp }
  */
 export const verifyRegisterOtp = createAsyncThunk<
   TokenResponse,
@@ -76,7 +103,6 @@ export const verifyRegisterOtp = createAsyncThunk<
 /**
  * 3) Resend Register OTP
  * POST /api/v1/auth/resend-register-otp
- * body: { email }
  */
 export const resendRegisterOtp = createAsyncThunk<
   SendOtpResponse,
@@ -112,9 +138,8 @@ export const login = createAsyncThunk<
 });
 
 /**
- * 5) Firebase (phone login/signup)
+ * 5) Firebase
  * POST /api/v1/auth/firebase
- * body: { idToken, role: "user" }
  */
 export const firebaseAuth = createAsyncThunk<
   TokenResponse,
@@ -135,7 +160,6 @@ export const firebaseAuth = createAsyncThunk<
 /**
  * 6) Google continue
  * POST /api/v1/auth/google
- * body: { idToken, role: "user" }
  */
 export const googleAuth = createAsyncThunk<
   TokenResponse,
@@ -153,17 +177,50 @@ export const googleAuth = createAsyncThunk<
   }
 });
 
-
-
+/**
+ * ✅ 7) Logout (FIXED)
+ * POST /api/v1/auth/logout
+ *
+ * - Try logout with raw axios (no interceptors)
+ * - If 401 -> refresh -> retry logout
+ * - If refresh fails -> still resolve as logged out (UI logout)
+ */
 export const logout = createAsyncThunk<
   LogoutResponse,
   void,
   { rejectValue: string }
 >("auth/logout", async (_, { rejectWithValue }) => {
   try {
-    const res = await api.post<LogoutResponse>("/api/v1/auth/logout");
+    const res = await axios.post<LogoutResponse>(
+      "/api/v1/auth/logout",
+      {},
+      { withCredentials: true }
+    );
     return res.data;
   } catch (err) {
+    const e = err as AxiosError;
+
+    if (e.response?.status === 401) {
+      try {
+        await axios.post(
+          "/api/v1/auth/refresh",
+          {},
+          { withCredentials: true }
+        );
+
+        const res2 = await axios.post<LogoutResponse>(
+          "/api/v1/auth/logout",
+          {},
+          { withCredentials: true }
+        );
+
+        return res2.data;
+      } catch {
+        // refresh failed => session already dead => treat as logged out
+        return { success: true, message: "Logged out" };
+      }
+    }
+
     return rejectWithValue(getErrorMessage(err));
   }
 });

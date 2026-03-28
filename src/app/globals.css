@@ -3,21 +3,10 @@
 @import "shadcn/tailwind.css";
 @import "react-international-phone/style.css";
 
-/* GLOBAL THEME COLORS */
 @theme {
-  --color-primary-50: #fff4ef;
-  --color-primary-100: #ffe6dc;
-  --color-primary-200: #ffccb8;
-  --color-primary-300: #ffad8a;
-  --color-primary-400: #ff8a5f;
-  --color-primary-500: #f26935;
-  --color-primary-600: #e65a24;
-  --color-primary-700: #c5481b;
-  --color-primary-800: #9d3a18;
-  --color-primary-900: #7e3218;
-  --color-primary-950: #44170c;
+  /* PRIMARY BRAND SCALE */
 
-   /* --color-primary-50:  #e9ffea;
+  --color-primary-50: #e9ffea;
   --color-primary-100: #c9ffcc;
   --color-primary-200: #98ff9f;
   --color-primary-300: #5cff69;
@@ -27,7 +16,21 @@
   --color-primary-700: #18a622;
   --color-primary-800: #13841c;
   --color-primary-900: #106c18;
-  --color-primary-950: #05390a; */
+  --color-primary-950: #05390a;
+
+  /* --color-primary-50: #fff4ef;
+  --color-primary-100: #ffe6dc;
+  --color-primary-200: #ffccb8;
+  --color-primary-300: #ffad8a;
+  --color-primary-400: #ff8a5f;
+  --color-primary-500: #f26935;
+  --color-primary-600: #e65a24;
+  --color-primary-700: #c5481b;
+  --color-primary-800: #9d3a18;
+  --color-primary-900: #7e3218;
+  --color-primary-950: #44170c; */
+
+  /* SECONDARY SCALE */
 
   --color-secondary-50: #fffae8;
   --color-secondary-100: #fff3c2;
@@ -41,30 +44,53 @@
   --color-secondary-900: #6d4a0b;
   --color-secondary-950: #3f2704;
 
+  /* SEMANTIC COLORS (shadcn compatible) */
+
+  --color-primary: var(--color-primary-500);
+  --color-primary-foreground: #ffffff;
+
+  --color-secondary: var(--color-secondary-500);
+  --color-secondary-foreground: #000000;
+
   --color-accent: #cf3438;
 
-  --color-border: #e5e7eb;
+  --color-muted: #f4f4f5;
+  --color-muted-foreground: #7a7a7a;
+
+  --color-card: #ffffff;
+  --color-card-foreground: #0f172a;
+
+  --color-border: #e4e1dc;
   --color-background: #ffffff;
   --color-foreground: #0f172a;
+
+  --color-destructive: #cf3438;
+
+  /* FONTS */
 
   --font-sans: var(--font-open-sans);
   --font-heading: var(--font-montserrat);
   --font-ui: var(--font-lato);
 }
 
+/* =========================
+   GLOBAL BODY STYLE
+========================= */
+
 body {
   font-family: var(--font-open-sans);
-  /* font-family: Arial, Helvetica, sans-serif; */
   background: var(--color-background);
   color: var(--color-foreground);
 }
 
-/* Phone Input Styles */
+/* =========================
+   PHONE INPUT STYLES
+========================= */
+
 .react-international-phone-input-container {
   border: 1px solid var(--color-border);
   border-radius: 0.5rem;
   background: white;
-  padding: 0;
 }
 
 .react-international-phone-input-container:focus-within {
@@ -85,6 +111,17 @@ body {
   background: transparent !important;
 }
 
+/* =========================
+   MUTED TEXT
+========================= */
+
+.text-muted {
+  color: var(--color-muted-foreground);
+}
+
+/* =========================
+   SCROLLBAR HIDE
+========================= */
 
 .scrollbar-hide::-webkit-scrollbar {
   display: none;
@@ -93,4 +130,29 @@ body {
 .scrollbar-hide {
   -ms-overflow-style: none;
   scrollbar-width: none;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+
+
+
+.line-clamp-2{
+  display:-webkit-box;
+  -webkit-box-orient:vertical;
+  -webkit-line-clamp:2;
+  overflow:hidden;
+}
+.line-clamp-1{
+  display:-webkit-box;
+  -webkit-box-orient:vertical;
+  -webkit-line-clamp:1;
+  overflow:hidden;
 }

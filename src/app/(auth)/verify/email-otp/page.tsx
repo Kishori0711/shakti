@@ -83,7 +83,7 @@ export default function EmailOtpPage() {
       sessionStorage.removeItem("emailOtpSentAt");
 
       toast.success("Email verified successfully");
-      router.replace("/");
+      router.replace("/home");
     } catch (err: unknown) {
       toast.error(getErrorMessage(err));
     }

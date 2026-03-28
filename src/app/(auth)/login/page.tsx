@@ -77,7 +77,7 @@ export default function LoginPage() {
       ).unwrap();
 
       toast.success("Login successful");
-      router.replace("/");
+      router.replace("/home");
     } catch (e: any) {
       toast.error(typeof e === "string" ? e : "Login failed");
     }
@@ -110,18 +110,27 @@ export default function LoginPage() {
     }
   };
 
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (method === "email") {
+      onEmailLogin();
+    } else {
+      onPhoneSendOtp();
+    }
+  };
+
   return (
-    <div className="w-full space-y-4">
+    <form onSubmit={handleSubmit} className="w-full space-y-4">
       <div>
         <div>
-          <h2 className="text-2xl font-semibold text-gray-900">Welcome Back</h2>
+          <h2 className="text-xl font-semibold text-gray-900">Welcome Back</h2>
           <p className="text-sm text-gray-500">Enter your credentials to access your account.</p>
         </div>
-        <div className="mt-3">
+        <div className="mt-1">
           <AuthMethodSwitch />
         </div>
       </div>
-  
+
       {method === "email" ? (
         <>
           <Input
@@ -152,7 +161,7 @@ export default function LoginPage() {
             </Link>
           </div>
 
-          <Button type="button" disabled={loginLoading} onClick={onEmailLogin}>
+          <Button type="submit" disabled={loginLoading}>
             {loginLoading ? "Please wait..." : "Sign In"}
           </Button>
         </>
@@ -165,7 +174,7 @@ export default function LoginPage() {
             defaultCountry="in"
           />
 
-          <Button type="button" onClick={onPhoneSendOtp}>
+          <Button type="submit">
             Send OTP
           </Button>
 
@@ -187,7 +196,7 @@ export default function LoginPage() {
         </span>
       </div>
 
-      <GoogleContinue text="Continue with Google" redirectTo="/" />
-    </div>
+      <GoogleContinue text="Continue with Google" redirectTo="/home" />
+    </form>
   );
 }

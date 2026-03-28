@@ -137,26 +137,7 @@ export function TopicCard({
           </span>
         </div>
 
-        <button
-          type="button"
-          aria-label="Play"
-          className={[
-            "absolute bottom-4 right-4",
-            "grid h-10 w-10 place-items-center rounded-full",
-            "bg-purple-700 text-white shadow-md",
-            "transition-transform duration-200 ease-out",
-            "group-hover:scale-[1.05] group-focus-visible:scale-[1.05]",
-          ].join(" ")}
-          onClick={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            onPlay?.(topic);
-          }}
-        >
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-            <path d="M9 7.5v9l8-4.5-8-4.5Z" />
-          </svg>
-        </button>
+     
       </div>
 
       <div className="mt-3 space-y-1">
